@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/SYUcap/src/main/java/com/SYUcap/SYUcap/User/UserRepository.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/SYUcap/src/main/java/com/SYUcap/SYUcap/User/UserRepository.java" />
+              <option name="originalContent" value="package com.SYUcap.SYUcap.User;&#10;&#10;import org.springframework.data.jpa.repository.JpaRepository;&#10;&#10;import java.util.Optional;&#10;&#10;public interface UserRepository extends JpaRepository&lt;Users,Long&gt; {&#10;    Optional&lt;Users&gt; findByUsername(String username);&#10;    Optional&lt;Users&gt; findByUserId(String userId);&#10;&#10;}&#10;" />
+              <option name="updatedContent" value="package com.SYUcap.SYUcap.User;&#10;&#10;import org.springframework.data.jpa.repository.JpaRepository;&#10;&#10;import java.util.Optional;&#10;&#10;public interface UserRepository extends JpaRepository&lt;Users,Long&gt; {&#10;    Optional&lt;Users&gt; findByUserId(String userId);&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
