@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>모두의 공강 - 홈</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="center">⏱️</div>
+    <h1>모두의 공강</h1>
+</header>
+
+<main class="container">
+
+    <section class="hero card">
+        <div>
+            <h2>오늘 공강을 쉽고 빠르게</h2>
+            <p class="muted">카테고리를 선택하고 친구들과 겹치는 공강을 찾아보세요.</p>
+        </div>
+        <a class="cta" th:href="@{/groups}">그룹 만들기</a>
+    </section>
+
+    <!-- 카테고리 -->
+    <section>
+        <div class="section-title">
+            <h3>카테고리</h3><span class="line"></span>
+        </div>
+        <div class="cat-grid">
+            <a class="cat-btn" th:href="@{'/groups?cat=' + '게임'}"><span class="ico">🎮</span><span class="lbl">게임</span></a>
+            <a class="cat-btn" th:href="@{'/groups?cat=' + '스터디'}"><span class="ico">📚</span><span class="lbl">스터디</span></a>
+            <a class="cat-btn" th:href="@{'/groups?cat=' + '영화'}"><span class="ico">🎬</span><span class="lbl">영화</span></a>
+            <a class="cat-btn" th:href="@{'/groups?cat=' + '운동'}"><span class="ico">🏃</span><span class="lbl">운동</span></a>
+            <a class="cat-btn" th:href="@{'/groups?cat=' + '밥약'}"><span class="ico">🍚</span><span class="lbl">밥약</span></a>
+        </div>
+    </section>
+
+    <!-- 퀵 액션 -->
+    <section>
+        <div class="section-title">
+            <h3>빠른 실행</h3><span class="line"></span>
+        </div>
+        <div class="qa-grid">
+            <a class="qa-btn" th:href="@{/groups}">➕ 새 그룹</a>
+            <a class="qa-btn" th:href="@{/groups}">🔗 초대코드 입력</a>
+            <a class="qa-btn" th:href="@{/mypage}">🗓️ 시간표 불러오기</a>
+            <a class="qa-btn" th:href="@{/groups}">⏱️ 공강 찾기</a>
+        </div>
+    </section>
+
+    <!-- 참여 그룹 (샘플) -->
+    <section>
+        <div class="section-title">
+            <h3>참여 중인 그룹</h3><a class="more" th:href="@{/groups}">전체 보기</a>
+        </div>
+        <div class="hscroll">
+            <article class="group-card"><div class="g-name">컴공 2반 스터디</div><div class="g-meta">6명 · 수 13–15 겹침 4명</div></article>
+            <article class="group-card"><div class="g-name">알고리즘 팀</div><div class="g-meta">4명 · 금 10–12 겹침 3명</div></article>
+            <article class="group-card"><div class="g-name">영화 동아리</div><div class="g-meta">8명 · 토 19–21 겹침 5명</div></article>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠&#xfe0e;</span><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥&#xfe0e;</span><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔&#xfe0e;</span><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍&#xfe0e;</span><span>마이</span></a>
+    </nav>
+</footer>
+
+</body>
+</html>
