@@ -60,9 +60,9 @@ git push origin [브랜치-이름]
 Bash
 
 # 1. 'feature/new-function' 이라는 브랜치를 만들고 이동
-"
+ ```
 git checkout -b feature/new-function
-"
+ ```
 # 2. 작업 후 변경사항 저장
  ```
 git add .
