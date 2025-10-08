@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>모두의 공강 - 홈</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="center">⏱️</div>
+    <h1>모두의 공강</h1>
+</header>
+
+<main class="container">
+
+    <!-- 히어로 -->
+    <section class="hero card">
+        <div>
+            <h2>오늘 공강을 쉽고 빠르게</h2>
+            <p class="muted">카테고리를 선택하고 친구들과 겹치는 공강을 찾아보세요.</p>
+        </div>
+        <a class="cta" th:href="@{/groups}">그룹 만들기</a>
+    </section>
+
+    <!-- 카테고리 (동적) -->
+    <section>
+        <div class="section-title">
+            <h3>카테고리</h3><span class="line"></span>
+        </div>
+
+        <div class="cat-grid">
+            <a class="cat-btn"
+               th:each="c : ${categories}"
+               th:href="@{/board/{cat}(cat=${c})}"
+               th:with="ico=${c=='게임' ? '🎮' :
+                         (c=='스터디' ? '📚' :
+                         (c=='영화' ? '🎬' :
+                         (c=='운동' ? '🏃' : '🍚')))}">
+                <span class="ico" th:text="${ico}">🎮</span>
+                <span class="lbl" th:text="${c}">게임</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- 빠른 실행 -->
+    <section>
+        <div class="section-title">
+            <h3>빠른 실행</h3><span class="line"></span>
+        </div>
+        <div class="qa-grid">
+            <a class="qa-btn" th:href="@{/groups}">➕ 새 그룹</a>
+            <a class="qa-btn" th:href="@{/groups}">🔗 초대코드 입력</a>
+            <a class="qa-btn" th:href="@{/mypage}">🗓️ 시간표 불러오기</a>
+            <a class="qa-btn" th:href="@{/groups}">⏱️ 공강 찾기</a>
+        </div>
+    </section>
+
+    <!-- 최신 글 미리보기 -->
+    <section>
+        <div class="section-title">
+            <h3>최신 글</h3><span class="line"></span>
+            <a class="more" th:href="@{/board}">전체 보기</a>
+        </div>
+
+        <section class="card">
+            <table class="board-table">
+                <thead>
+                <tr>
+                    <th style="width:80px">카테고리</th>
+                    <th>제목</th>
+                    <th style="width:140px">장소</th>
+                    <th style="width:220px">일정</th>
+                    <th style="width:90px">인원</th>
+                    <th style="width:120px">작성자</th>
+                    <th style="width:160px">작성일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(recentPosts)}">
+                    <td colspan="7" class="empty-cell">아직 작성된 글이 없어요. 첫 글을 남겨보세요!</td>
+                </tr>
+                <tr th:each="p : ${recentPosts}">
+                    <td>
+                        <a th:href="@{/board/{cat}(cat=${p.category})}"
+                           th:text="${p.category}">스터디</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/board/{cat}/{id}(cat=${p.category}, id=${p.id})}"
+                           th:text="${p.title}">제목</a>
+                    </td>
+                    <td th:text="${p.location}">장소</td>
+                    <td th:text="${p.meetingStartTime} + ' ~ ' + ${p.meetingEndTime}">일정</td>
+                    <td th:text="${p.limitCount}">인원</td>
+                    <td th:text="${p.authorName}">작성자</td>
+                    <td th:text="${p.createdAt}">작성일</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+
+    <!-- 참여 그룹 (샘플 그대로 유지) -->
+    <section>
+        <div class="section-title">
+            <h3>참여 중인 그룹</h3><a class="more" th:href="@{/groups}">전체 보기</a>
+        </div>
+        <div class="hscroll">
+            <article class="group-card"><div class="g-name">컴공 2반 스터디</div><div class="g-meta">6명 · 수 13–15 겹침 4명</div></article>
+            <article class="group-card"><div class="g-name">알고리즘 팀</div><div class="g-meta">4명 · 금 10–12 겹침 3명</div></article>
+            <article class="group-card"><div class="g-name">영화 동아리</div><div class="g-meta">8명 · 토 19–21 겹침 5명</div></article>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠&#xfe0e;</span><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥&#xfe0e;</span><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔&#xfe0e;</span><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍&#xfe0e;</span><span>마이</span></a>
+    </nav>
+</footer>
+
+</body>
+</html>

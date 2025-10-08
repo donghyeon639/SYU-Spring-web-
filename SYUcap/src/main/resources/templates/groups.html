@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>모두의 공강 - 그룹</title>
+  <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<header>
+  <h1>모두의 공강</h1>
+</header>
+
+<main>
+  <h2>그룹</h2>
+  <p>내가 속한 그룹 목록과 새 그룹 만들기를 배치하세요.</p>
+</main>
+
+<hr>
+
+<footer>
+  <nav>
+    <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''">🏠&#xfe0e;<br><span>홈</span></a>
+    <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''">👥&#xfe0e;<br><span>그룹</span></a>
+    <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''">🔔&#xfe0e;<br><span>알림</span></a>
+    <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''">🙍&#xfe0e;<br><span>마이</span></a>
+  </nav>
+</footer>
+</body>
+</html>

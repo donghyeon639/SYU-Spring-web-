@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'글쓰기 - ' + ${category}">글쓰기</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="left">✍️</div>
+    <h1 th:text="${category} + ' 글쓰기'">글쓰기</h1>
+</header>
+
+<main class="container">
+    <section class="card">
+        <form th:action="@{/board/{cat}/write(cat=${category})}" method="post" class="form">
+            <div class="form-row">
+                <label>제목</label>
+                <input type="text" name="title" placeholder="제목을 입력하세요" required>
+            </div>
+
+            <div class="form-row">
+                <label>작성자</label>
+                <input type="text" name="authorName" placeholder="익명">
+            </div>
+
+            <div class="form-row">
+                <label>내용</label>
+                <textarea name="content" rows="8" placeholder="내용을 입력하세요" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <label>장소</label>
+                <input type="text" name="location" placeholder="예: 도서관 3층">
+            </div>
+
+            <div class="form-row">
+                <label>시작 시간</label>
+                <input type="datetime-local" name="meetingStartTime">
+            </div>
+
+            <div class="form-row">
+                <label>종료 시간</label>
+                <input type="datetime-local" name="meetingEndTime">
+            </div>
+
+            <div class="form-row">
+                <label>제한 인원</label>
+                <input type="number" name="limitCount" min="1" step="1" placeholder="최대 인원">
+            </div>
+
+            <div class="form-actions">
+                <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">취소</a>
+                <button type="submit" class="cta">등록</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠&#xfe0e;</span><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥&#xfe0e;</span><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔&#xfe0e;</span><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍&#xfe0e;</span><span>마이</span></a>
+    </nav>
+</footer>
+</body>
+</html>

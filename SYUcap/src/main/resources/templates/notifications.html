@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>모두의 공강 - 알림</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<header>
+    <h1>모두의 공강</h1>
+</header>
+
+<main>
+    <h2>알림</h2>
+    <p>초대/일정/시스템 알림이 여기에 표시됩니다.</p>
+</main>
+
+<hr>
+
+<footer>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''">🏠&#xfe0e;<br><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''">👥&#xfe0e;<br><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''">🔔&#xfe0e;<br><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''">🙍&#xfe0e;<br><span>마이</span></a>
+    </nav>
+</footer>
+</body>
+</html>

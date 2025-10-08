@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'모두의 공강 - ' + ${category} + ' 게시판'">게시판</title>
+  <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="left">⏱️</div>
+  <h1 th:text="${category} + ' 게시판'">게시판</h1>
+</header>
+
+<main class="container">
+  <section class="section-title">
+    <h3 th:text="${category} + ' 글 목록'">글 목록</h3>
+    <a class="cta" th:href="@{/board/{cat}/write(cat=${category})}">글쓰기</a>
+  </section>
+
+  <section class="card">
+    <table class="board-table">
+      <thead>
+      <tr>
+        <th style="width:60px">번호</th>
+        <th>제목</th>
+        <th style="width:140px">장소</th>
+        <th style="width:220px">일정</th>
+        <th style="width:90px">인원</th>
+        <th style="width:120px">작성자</th>
+        <th style="width:160px">작성일</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${#lists.isEmpty(posts)}">
+        <td colspan="7" class="empty-cell">아직 글이 없어요. 첫 글을 작성해보세요!</td>
+      </tr>
+
+      <tr th:each="p : ${posts}">
+        <td th:text="${p.id}">1</td>
+        <td>
+          <a th:href="@{/board/{cat}/{id}(cat=${category}, id=${p.id})}"
+             th:text="${p.title}">제목</a>
+        </td>
+        <td th:text="${p.location} ?: '-'">-</td>
+        <td>
+          <span th:text="${p.meetingStartTime != null ? #temporals.format(p.meetingStartTime, 'MM/dd HH:mm') : '-'}">-</span>
+          <span th:text="${p.meetingEndTime != null ? ' ~ ' + #temporals.format(p.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
+        </td>
+        <td th:text="${p.limitCount != null ? p.limitCount : '-'}">-</td>
+        <td th:text="${p.authorName} ?: '익명'">익명</td>
+        <td th:text="${#temporals.format(p.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div style="height:12px"></div>
+  <a class="qa-btn" th:href="@{/home}" style="display:inline-flex">← 홈으로</a>
+</main>
+
+<footer>
+  <nav>
+    <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠&#xfe0e;</span><span>홈</span></a>
+    <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥&#xfe0e;</span><span>그룹</span></a>
+    <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔&#xfe0e;</span><span>알림</span></a>
+    <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍&#xfe0e;</span><span>마이</span></a>
+  </nav>
+</footer>
+</body>
+</html>
