@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="${post.title}">게시글 상세</title>
-  <link rel="stylesheet" th:href="@{/app.css}">
+    <meta charset="UTF-8">
+    <title th:text="${post.title}">게시글 상세</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 
 <header class="topbar">
-  <div class="left">📌</div>
-  <h1 th:text="${category} + ' 게시판'">게시판</h1>
+    <div class="left">📌</div>
+    <h1 th:text="${category} + ' 게시판'">게시판</h1>
 </header>
 
 <main class="container">
-  <section class="card">
-    <h2 th:text="${post.title}">제목</h2>
-    <p class="muted">
-      작성자: <span th:text="${post.authorName}">익명</span> ·
-      작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
-    </p>
-    <p><b>장소:</b> <span th:text="${post.location} ?: '-'">-</span></p>
-    <p>
-      <b>일정:</b>
-      <span th:text="${post.meetingStartTime != null ? #temporals.format(post.meetingStartTime, 'MM/dd HH:mm') : '-'}">-</span>
-      <span th:text="${post.meetingEndTime != null ? ' ~ ' + #temporals.format(post.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
-    </p>
-    <p><b>제한 인원:</b> <span th:text="${post.limitCount != null ? post.limitCount : '-'}">-</span></p>
+    <section class="card">
+        <h2 th:text="${post.title}">제목</h2>
+        <p class="muted">
+            작성자: <span th:text="${post.authorName}">익명</span> ·
+            작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
+        </p>
+        <p><b>장소:</b> <span th:text="${post.location} ?: '-'">-</span></p>
+        <p>
+            <b>일정:</b>
+            <span th:text="${post.meetingStartTime != null ? #temporals.format(post.meetingStartTime, 'MM/dd HH:mm') : '-'}">-</span>
+            <span th:text="${post.meetingEndTime != null ? ' ~ ' + #temporals.format(post.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
+        </p>
+        <p><b>제한 인원:</b> <span th:text="${post.limitCount != null ? post.limitCount : '-'}">-</span></p>
 
-    <hr>
-    <div th:text="${post.content}">내용</div>
+        <hr>
+        <div th:text="${post.content}">내용</div>
 
-    <div class="form-actions">
-      <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
-      <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline">
-        <button type="submit" class="danger">삭제</button>
-      </form>
-    </div>
-  </section>
+        <div class="form-actions">
+            <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
+            <div style="display:inline; margin-left: 10px;">
+                <a th:href="@{/board/{cat}/{id}/edit(cat=${category}, id=${post.id})}"
+                   style="background-color: #4CAF50; text-decoration: none; padding: 10px 20px; border-radius: 4px; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; line-height: 1.5;">수정</a>
+                <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline; margin-left: 5px;">
+                    <button type="submit" style="background-color: #f44336; padding: 10px 20px; border-radius: 4px; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; line-height: 1.5;">삭제</button>
+                </form>
+            </div>
+        </div>
+    </section>
 </main>
 
 <footer>
-  <nav>
-    <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠</span><span>홈</span></a>
-    <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥</span><span>그룹</span></a>
-    <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔</span><span>알림</span></a>
-    <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍</span><span>마이</span></a>
-  </nav>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠</span><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥</span><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔</span><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍</span><span>마이</span></a>
+    </nav>
 </footer>
 
 </body>

@@ -2,57 +2,79 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="'글쓰기 - ' + ${category}">글쓰기</title>
+    <title th:text="(${isEdit} ? '글수정 - ' : '글쓰기 - ') + ${category}">글쓰기</title>
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 
 <header class="topbar">
-    <div class="left">✍️</div>
-    <h1 th:text="${category} + ' 글쓰기'">글쓰기</h1>
+    <div class="left" th:text="${isEdit} ? '✏️' : '✍️'">✍️</div>
+    <h1 th:text="${category} + (${isEdit} ? ' 글수정' : ' 글쓰기')">글쓰기</h1>
 </header>
 
 <main class="container">
     <section class="card">
-        <form th:action="@{/board/{cat}/write(cat=${category})}" method="post" class="form">
-            <div class="form-row">
-                <label>제목</label>
-                <input type="text" name="title" placeholder="제목을 입력하세요" required>
-            </div>
+        <form
+                th:action="${isEdit} ? @{/board/{cat}/{id}/edit(cat=${category}, id=${post.id})} : @{/board/{cat}/write(cat=${category})}"
+                method="post"
+                class="form">
 
             <div class="form-row">
+                <label>제목</label>
+                <input type="text" name="title"
+                       th:value="${post.title}"
+                       placeholder="제목을 입력하세요" required>
+            </div>
+
+            <!-- 작성자명은 새 글 작성시에만 입력 가능 -->
+            <div class="form-row" th:if="${!isEdit}">
                 <label>작성자</label>
                 <input type="text" name="authorName" placeholder="익명">
             </div>
 
+            <!-- 수정 모드일 때는 작성자명 표시만 -->
+            <div class="form-row" th:if="${isEdit}">
+                <label>작성자</label>
+                <input type="text" th:value="${post.authorName}" readonly style="background-color: #f0f0f0;">
+            </div>
+
             <div class="form-row">
                 <label>내용</label>
-                <textarea name="content" rows="8" placeholder="내용을 입력하세요" required></textarea>
+                <textarea name="content" rows="8"
+                          th:text="${post.content}"
+                          placeholder="내용을 입력하세요" required></textarea>
             </div>
 
             <div class="form-row">
                 <label>장소</label>
-                <input type="text" name="location" placeholder="예: 도서관 3층">
+                <input type="text" name="location"
+                       th:value="${post.location}"
+                       placeholder="예: 도서관 3층">
             </div>
 
             <div class="form-row">
                 <label>시작 시간</label>
-                <input type="datetime-local" name="meetingStartTime">
+                <input type="datetime-local" name="meetingStartTime"
+                       th:value="${post.meetingStartTime != null ? #temporals.format(post.meetingStartTime, 'yyyy-MM-dd') + 'T' + #temporals.format(post.meetingStartTime, 'HH:mm') : ''}">
             </div>
 
             <div class="form-row">
                 <label>종료 시간</label>
-                <input type="datetime-local" name="meetingEndTime">
+                <input type="datetime-local" name="meetingEndTime"
+                       th:value="${post.meetingEndTime != null ? #temporals.format(post.meetingEndTime, 'yyyy-MM-dd') + 'T' + #temporals.format(post.meetingEndTime, 'HH:mm') : ''}">
             </div>
 
             <div class="form-row">
                 <label>제한 인원</label>
-                <input type="number" name="limitCount" min="1" step="1" placeholder="최대 인원">
+                <input type="number" name="limitCount"
+                       th:value="${post.limitCount}"
+                       min="1" step="1" placeholder="최대 인원">
             </div>
 
             <div class="form-actions">
-                <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">취소</a>
-                <button type="submit" class="cta">등록</button>
+                <a class="qa-btn"
+                   th:href="${isEdit} ? @{/board/{cat}/{id}(cat=${category}, id=${post.id})} : @{/board/{cat}(cat=${category})}">취소</a>
+                <button type="submit" class="cta" th:text="${isEdit} ? '수정' : '등록'">등록</button>
             </div>
         </form>
     </section>

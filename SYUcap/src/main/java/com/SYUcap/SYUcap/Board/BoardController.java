@@ -58,6 +58,7 @@ public class BoardController {
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", new Board());
+        model.addAttribute("isEdit", false);  // 새 글 작성
         return "board-form";
     }
 
@@ -104,6 +105,49 @@ public class BoardController {
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
         return "board-detail";
+    }
+
+    /** 글 수정 폼 (새로 추가) */
+    @GetMapping("/{cat}/{id}/edit")
+    public String editForm(@PathVariable String cat, @PathVariable Long id, Model model) {
+        validateCategory(cat);
+        Board board = boardService.findById(id);
+        if (!cat.equals(board.getCategory())) {
+            return "redirect:/board/" + board.getCategory() + "/" + id + "/edit";
+        }
+        model.addAttribute("active", "home");
+        model.addAttribute("category", cat);
+        model.addAttribute("post", board);
+        model.addAttribute("isEdit", true);  // 수정 모드
+        return "board-form";
+    }
+
+    /** 글 수정 처리 (새로 추가) */
+    @PostMapping("/{cat}/{id}/edit")
+    public String editSubmit(
+            @PathVariable String cat,
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingStartTime,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingEndTime,
+            @RequestParam(required = false) Integer limitCount
+    ) {
+        validateCategory(cat);
+
+        Board board = boardService.findById(id);
+        board.setTitle(title);
+        board.setContent(content);
+        board.setLocation(location);
+        board.setMeetingStartTime(meetingStartTime);
+        board.setMeetingEndTime(meetingEndTime);
+        board.setLimitCount(limitCount);
+        // 작성자명과 카테고리는 수정 불가
+
+        boardService.save(board);
+        String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
+        return "redirect:/board/" + encodedCat + "/" + id; // 수정 후 상세페이지로
     }
 
     /** 글 삭제 */
