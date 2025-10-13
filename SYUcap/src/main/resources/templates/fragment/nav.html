@@ -1,0 +1,14 @@
+
+
+
+
+
+
+
+
+<nav th:fragment="bottomNav" class="inner-nav">
+    <a th:href="@{/home}"              th:classappend="${active}=='home' ? ' active' : ''" aria-label="홈">⌂</a>
+    <a th:href="@{/search}"            th:classappend="${active}=='search' ? ' active' : ''" aria-label="검색">⌕</a>
+    <a th:href="@{/notifications}"     th:classappend="${active}=='alarm' ? ' active' : ''" aria-label="알림">⍾</a>
+    <a th:href="@{/mypage}"            th:classappend="${active}=='me' ? ' active' : ''" aria-label="내정보">◉g</a>
+</nav>
