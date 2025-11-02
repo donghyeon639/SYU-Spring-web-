@@ -29,9 +29,4 @@ public class Board {
     private Integer limitCount;         // 제한 인원
     private String authorName;          // 작성자 이름
     private LocalDateTime createdAt;    // 작성일
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

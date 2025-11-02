@@ -31,15 +31,4 @@ public class UserController {
         userService.addUser(userId, password, userName);
         return "login.html";
     }
-
-    @PostMapping("/login")
-    String login(@RequestParam String userId, @RequestParam String password) {
-        boolean result = userService.login(userId, password);
-        if (result) {
-            return "main";
-        } else {
-            return "redirect:/login?error=true";
-        }
-    }
-
 }

@@ -6,11 +6,8 @@
     <link href="/login.css" rel="stylesheet">
 </head>
 <body>
-<div th:if="${error}" class="login-error-modal">
-    <div class="login-error-content">
-        <span>로그인 실패하였습니다</span>
-        <button onclick="this.parentElement.parentElement.style.display='none'">닫기</button>
-    </div>
+<div th:if="${param.error}">
+    <p style="color: red;">아이디 또는 비밀번호가 맞지 않습니다.</p>
 </div>
 <div class="logo">
     <h1>모두의 공강</h1>
