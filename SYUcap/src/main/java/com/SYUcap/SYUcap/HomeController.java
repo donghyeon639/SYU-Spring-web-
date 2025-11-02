@@ -22,7 +22,7 @@ public class HomeController {
         model.addAttribute("categories", new String[]{"게임", "스터디", "영화", "운동", "밥약"});
 
         // 최근 글 10개 (createdAt 내림차순)
-        List<Board> recentPosts = boardService.findAll().stream()
+        List<Board> recentPosts = boardService.getAllSorted().stream()
                 .sorted(Comparator.comparing(Board::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .limit(10)
                 .toList();

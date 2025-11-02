@@ -16,9 +16,9 @@ public class Users {
     public Long id;
 
     @Column(unique = true)
-    private String userId;
+    private String userId; // 사용자 아이디
 
     @Column(nullable = false)
-    private String password;
-    private String userName;
+    private String password; // 암호화된 비밀번호
+    private String userName; // 사용자 이름
 }

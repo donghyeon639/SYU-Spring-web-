@@ -1,5 +1,6 @@
 package com.SYUcap.SYUcap.Board;
 
+import com.SYUcap.SYUcap.User.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,4 +30,16 @@ public class Board {
     private Integer limitCount;         // 제한 인원
     private String authorName;          // 작성자 이름
     private LocalDateTime createdAt;    // 작성일
+
+    // 작성자(유저) 연관관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Users user;
+
+    @PrePersist
+    public void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

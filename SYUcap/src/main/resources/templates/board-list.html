@@ -15,7 +15,8 @@
 <main class="container">
   <section class="section-title">
     <h3 th:text="${category} + ' 글 목록'">글 목록</h3>
-    <a class="cta" th:href="@{/board/{cat}/write(cat=${category})}">글쓰기</a>
+    <!-- 전체 목록에서는 글쓰기 버튼을 숨김 -->
+    <a class="cta" th:if="${category} != '전체'" th:href="@{/board/{cat}/write(cat=${category})}">글쓰기</a>
   </section>
 
   <section class="card">
@@ -39,7 +40,8 @@
       <tr th:each="p : ${posts}">
         <td th:text="${p.id}">1</td>
         <td>
-          <a th:href="@{/board/{cat}/{id}(cat=${category}, id=${p.id})}"
+          <!-- 항상 글의 실제 카테고리로 링크하도록 수정 -->
+          <a th:href="@{/board/{cat}/{id}(cat=${p.category}, id=${p.id})}"
              th:text="${p.title}">제목</a>
         </td>
         <td th:text="${p.location} ?: '-'">-</td>
@@ -49,7 +51,8 @@
         </td>
         <td th:text="${p.limitCount != null ? p.limitCount : '-'}">-</td>
         <td th:text="${p.authorName} ?: '익명'">익명</td>
-        <td th:text="${#temporals.format(p.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</td>
+        <!-- createdAt null-safe 처리 -->
+        <td th:text="${p.createdAt != null ? #temporals.format(p.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">2025-01-01</td>
       </tr>
       </tbody>
     </table>

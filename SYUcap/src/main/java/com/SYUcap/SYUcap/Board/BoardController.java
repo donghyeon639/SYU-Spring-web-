@@ -2,6 +2,7 @@ package com.SYUcap.SYUcap.Board;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
+
+import com.SYUcap.SYUcap.User.UserRepository;
+import com.SYUcap.SYUcap.User.CustomUser;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,17 +21,12 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-
-    // 허용 카테고리 (검증 & 라벨 표기)
-    private static final List<String> ALLOWED = List.of("게임", "스터디", "영화", "운동", "밥약");
+    private final UserRepository userRepository;
 
     /** 전체 목록 */
     @GetMapping
     public String listAll(Model model) {
-        List<Board> boards = boardService.findAll().stream()
-                .sorted(Comparator.comparing(Board::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-                .toList();
-
+        List<Board> boards = boardService.getAllSorted();
         model.addAttribute("active", "home");
         model.addAttribute("category", "전체");
         model.addAttribute("posts", boards);
@@ -38,13 +36,7 @@ public class BoardController {
     /** 카테고리별 목록 */
     @GetMapping("/{cat}")
     public String listByCategory(@PathVariable("cat") String cat, Model model) {
-        validateCategory(cat);
-
-        List<Board> boards = boardService.findAll().stream()
-                .filter(p -> cat.equals(p.getCategory()))
-                .sorted(Comparator.comparing(Board::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-                .toList();
-
+        List<Board> boards = boardService.getByCategorySorted(cat);
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("posts", boards);
@@ -53,10 +45,14 @@ public class BoardController {
 
     /** 글쓰기 폼 */
     @GetMapping("/{cat}/write")
-    public String writeForm(@PathVariable("cat") String cat, Model model) {
-        validateCategory(cat);
+    public String writeForm(@PathVariable("cat") String cat, Model model, Authentication auth) {
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
+        String authorName = null;
+        if (auth != null && auth.getPrincipal() instanceof CustomUser cu) {
+            authorName = cu.getUserName();
+        }
+        model.addAttribute("authorName", authorName);
         model.addAttribute("post", new Board());
         model.addAttribute("isEdit", false);  // 새 글 작성
         return "board-form";
@@ -72,22 +68,10 @@ public class BoardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingStartTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingEndTime,
             @RequestParam(required = false) Integer limitCount,
-            @RequestParam(defaultValue = "익명") String authorName
+            Authentication auth
     ) {
-        validateCategory(cat);
-
-        Board board = new Board();
-        board.setCategory(cat);
-        board.setTitle(title);
-        board.setContent(content);
-        board.setLocation(location);
-        board.setMeetingStartTime(meetingStartTime);
-        board.setMeetingEndTime(meetingEndTime);
-        board.setLimitCount(limitCount);
-        board.setAuthorName(authorName);
-        // createdAt은 @PrePersist에서 자동 세팅
-
-        boardService.save(board);
+        // 로그인 사용자 정보(Authentication) 전달하여 작성자 연결
+        boardService.createPost(cat, title, content, location, meetingStartTime, meetingEndTime, limitCount, auth);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
         return "redirect:/board/" + encodedCat; // 저장 후 목록으로
     }
@@ -95,8 +79,7 @@ public class BoardController {
     /** 글 상세 보기 */
     @GetMapping("/{cat}/{id}")
     public String detail(@PathVariable String cat, @PathVariable Long id, Model model) {
-        validateCategory(cat);
-        Board board = boardService.findById(id); // 존재하지 않으면 예외
+        Board board = boardService.getById(id); // 존재하지 않으면 예외
         if (!cat.equals(board.getCategory())) {
             // URL의 카테고리와 실제 글의 카테고리가 다르면 해당 카테고리로 리다이렉트
             return "redirect:/board/" + board.getCategory() + "/" + id;
@@ -107,22 +90,22 @@ public class BoardController {
         return "board-detail";
     }
 
-    /** 글 수정 폼 (새로 추가) */
+    /** 글 수정 폼 */
     @GetMapping("/{cat}/{id}/edit")
-    public String editForm(@PathVariable String cat, @PathVariable Long id, Model model) {
-        validateCategory(cat);
-        Board board = boardService.findById(id);
+    public String editForm(@PathVariable String cat, @PathVariable Long id, Model model, Authentication auth) {
+        Board board = boardService.getById(id);
         if (!cat.equals(board.getCategory())) {
             return "redirect:/board/" + board.getCategory() + "/" + id + "/edit";
         }
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
+        model.addAttribute("authorName", board.getAuthorName());
         model.addAttribute("isEdit", true);  // 수정 모드
         return "board-form";
     }
 
-    /** 글 수정 처리 (새로 추가) */
+    /** 글 수정 처리 */
     @PostMapping("/{cat}/{id}/edit")
     public String editSubmit(
             @PathVariable String cat,
@@ -134,18 +117,7 @@ public class BoardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingEndTime,
             @RequestParam(required = false) Integer limitCount
     ) {
-        validateCategory(cat);
-
-        Board board = boardService.findById(id);
-        board.setTitle(title);
-        board.setContent(content);
-        board.setLocation(location);
-        board.setMeetingStartTime(meetingStartTime);
-        board.setMeetingEndTime(meetingEndTime);
-        board.setLimitCount(limitCount);
-        // 작성자명과 카테고리는 수정 불가
-
-        boardService.save(board);
+        boardService.updatePost(id, title, content, location, meetingStartTime, meetingEndTime, limitCount);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
         return "redirect:/board/" + encodedCat + "/" + id; // 수정 후 상세페이지로
     }
@@ -153,15 +125,8 @@ public class BoardController {
     /** 글 삭제 */
     @PostMapping("/{cat}/{id}/delete")
     public String delete(@PathVariable String cat, @PathVariable Long id) {
-        validateCategory(cat);
         boardService.delete(id);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
         return "redirect:/board/" + encodedCat;
-    }
-
-    private void validateCategory(String cat) {
-        if (!ALLOWED.contains(cat)) {
-            throw new IllegalArgumentException("Unknown category: " + cat);
-        }
     }
 }

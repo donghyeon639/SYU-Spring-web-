@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title th:text="(${isEdit} ? '글수정 - ' : '글쓰기 - ') + ${category}">글쓰기</title>
@@ -14,10 +14,8 @@
 
 <main class="container">
     <section class="card">
-        <form
-                th:action="${isEdit} ? @{/board/{cat}/{id}/edit(cat=${category}, id=${post.id})} : @{/board/{cat}/write(cat=${category})}"
-                method="post"
-                class="form">
+        <!-- 폼 시작 태그 복구 -->
+        <form th:action="${isEdit} ? @{/board/{cat}/{id}/edit(cat=${category}, id=${post.id})} : @{/board/{cat}/write(cat=${category})}" method="post" class="form">
 
             <div class="form-row">
                 <label>제목</label>
@@ -26,16 +24,10 @@
                        placeholder="제목을 입력하세요" required>
             </div>
 
-            <!-- 작성자명은 새 글 작성시에만 입력 가능 -->
-            <div class="form-row" th:if="${!isEdit}">
+            <!-- 작성자: 컨트롤러에서 전달된 authorName만 사용 -->
+            <div class="form-row">
                 <label>작성자</label>
-                <input type="text" name="authorName" placeholder="익명">
-            </div>
-
-            <!-- 수정 모드일 때는 작성자명 표시만 -->
-            <div class="form-row" th:if="${isEdit}">
-                <label>작성자</label>
-                <input type="text" th:value="${post.authorName}" readonly style="background-color: #f0f0f0;">
+                <input type="text" th:value="${authorName}" readonly style="background-color: #f0f0f0;">
             </div>
 
             <div class="form-row">
