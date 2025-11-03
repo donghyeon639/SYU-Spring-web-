@@ -48,7 +48,6 @@ public class BoardService {
         CustomUser principal = (CustomUser) auth.getPrincipal();
         Long authorId = principal.getId();
         String authorName = principal.getUsername();
-
         // Users 엔티티 레퍼런스 취득(추가 select 방지)
         Users authorRef = userRepository.getReferenceById(authorId);
 

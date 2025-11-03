@@ -10,7 +10,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void addUser(String userId, String password, String passwordConfirm, String username) {
+    public void addUser(String userId, String password, String username, String passwordConfirm) {
         // 아이디 중복 검사
         if (userRepository.findByUserId(userId).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
@@ -19,8 +19,7 @@ public class UserService {
         if (!isValidPassword(password)) {
             throw new IllegalArgumentException("비밀번호는 6~16자이며 특수문자를 최소 1개 포함해야 합니다.");
         }
-        // 비밀번호 확인 일치 검사
-        if (passwordConfirm == null || !password.equals(passwordConfirm)) {
+        if(!password.equals(passwordConfirm)) {
             throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
         Users user = new Users();
