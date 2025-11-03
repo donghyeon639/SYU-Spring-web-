@@ -1,5 +1,7 @@
 package com.SYUcap.SYUcap.Board;
 
+import com.SYUcap.SYUcap.Board.Comment;
+import com.SYUcap.SYUcap.Board.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     // 허용 카테고리 (검증 & 라벨 표기)
     private static final List<String> ALLOWED = List.of("게임", "스터디", "영화", "운동", "밥약");
@@ -100,11 +103,31 @@ public class BoardController {
             // URL의 카테고리와 실제 글의 카테고리가 다르면 해당 카테고리로 리다이렉트
             return "redirect:/board/" + board.getCategory() + "/" + id;
         }
+
+        List<Comment> comments = commentService.getCommentsByBoardId(id);
+
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
+        model.addAttribute("comments", comments);
         return "board-detail";
     }
+
+    /** 댓글 등록 */
+    @PostMapping("/{cat}/{id}/comment")
+    public String addComment(@PathVariable String cat,
+                             @PathVariable Long id,
+                             @RequestParam String content) {
+
+        // TODO: 현재 로그인 기능이 완성되면, 익명 대신 로그인한 사용자 연결
+        String authorName = "익명";
+
+        commentService.createComment(id, content, authorName);
+
+        String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
+        return "redirect:/board/" + encodedCat + "/" + id;
+    }
+
 
     /** 글 삭제 */
     @PostMapping("/{cat}/{id}/delete")

@@ -1,51 +1,81 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="${post.title}">게시글 상세</title>
-  <link rel="stylesheet" th:href="@{/app.css}">
+    <meta charset="UTF-8">
+    <title th:text="${post.title}">게시글 상세</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 
 <header class="topbar">
-  <div class="left">📌</div>
-  <h1 th:text="${category} + ' 게시판'">게시판</h1>
+    <div class="left">📌</div>
+    <h1 th:text="${category} + ' 게시판'">게시판</h1>
 </header>
 
 <main class="container">
-  <section class="card">
-    <h2 th:text="${post.title}">제목</h2>
-    <p class="muted">
-      작성자: <span th:text="${post.authorName}">익명</span> ·
-      작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
-    </p>
-    <p><b>장소:</b> <span th:text="${post.location} ?: '-'">-</span></p>
-    <p>
-      <b>일정:</b>
-      <span th:text="${post.meetingStartTime != null ? #temporals.format(post.meetingStartTime, 'MM/dd HH:mm') : '-'}">-</span>
-      <span th:text="${post.meetingEndTime != null ? ' ~ ' + #temporals.format(post.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
-    </p>
-    <p><b>제한 인원:</b> <span th:text="${post.limitCount != null ? post.limitCount : '-'}">-</span></p>
+    <section class="card">
+        <h2 th:text="${post.title}">제목</h2>
+        <p class="muted">
+            작성자: <span th:text="${post.authorName}">익명</span> ·
+            작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
+        </p>
+        <p><b>장소:</b> <span th:text="${post.location} ?: '-'">-</span></p>
+        <p>
+            <b>일정:</b>
+            <span th:text="${post.meetingStartTime != null ? #temporals.format(post.meetingStartTime, 'MM/dd HH:mm') : '-'}">-</span>
+            <span th:text="${post.meetingEndTime != null ? ' ~ ' + #temporals.format(post.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
+        </p>
+        <p><b>제한 인원:</b> <span th:text="${post.limitCount != null ? post.limitCount : '-'}">-</span></p>
 
-    <hr>
-    <div th:text="${post.content}">내용</div>
+        <hr>
+        <div th:text="${post.content}">내용</div>
 
-    <div class="form-actions">
-      <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
-      <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline">
-        <button type="submit" class="danger">삭제</button>
-      </form>
-    </div>
-  </section>
+        <hr>
+
+        <div class="comment-form">
+            <h4>댓글 쓰기</h4>
+            <form th:action="@{/board/{cat}/{id}/comment(cat=${category}, id=${post.id})}" method="post">
+                <textarea name="content" rows="3" placeholder="댓글을 입력하세요..." required style="width: 95%;"></textarea>
+                <div class="form-actions" style="text-align: right; margin-top: 8px;">
+                    <button type="submit" class="qa-btn">등록</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="comment-list" style="margin-top: 20px;">
+            <h4>댓글 목록</h4>
+
+            <div th:if="${!comments.isEmpty()}" th:each="comment : ${comments}" class="comment-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                <p style="margin-bottom: 4px;">
+                    <strong th:text="${comment.authorName}">작성자</strong>
+                    <span classs="muted" style="font-size: 0.9em; color: #777; margin-left: 10px;"
+                          th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
+                </p>
+                <p th:text="${comment.content}" style="margin-top: 0; white-space: pre-wrap;">댓글 내용입니다.</p>
+            </div>
+
+            <div th:if="${comments.isEmpty()}">
+                <p class="muted">아직 댓글이 없습니다.</p>
+            </div>
+        </div>
+
+
+        <div class="form-actions" style="margin-top: 20px;">
+            <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
+            <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline">
+                <button type="submit" class="danger">삭제</button>
+            </form>
+        </div>
+    </section>
 </main>
 
 <footer>
-  <nav>
-    <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠</span><span>홈</span></a>
-    <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥</span><span>그룹</span></a>
-    <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔</span><span>알림</span></a>
-    <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍</span><span>마이</span></a>
-  </nav>
+    <nav>
+        <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠</span><span>홈</span></a>
+        <a th:href="@{/groups}" th:classappend="${active}=='groups' ? 'active' : ''"><span class="icon">👥</span><span>그룹</span></a>
+        <a th:href="@{/notifications}" th:classappend="${active}=='notifications' ? 'active' : ''"><span class="icon">🔔</span><span>알림</span></a>
+        <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍</span><span>마이</span></a>
+    </nav>
 </footer>
 
 </body>
