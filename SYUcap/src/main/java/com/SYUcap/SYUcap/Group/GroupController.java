@@ -14,9 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * 그룹 관리 컨트롤러 - 그룹 조회, 멤버 관리 기능
- */
+/**그룹 관리 컨트롤러 - 그룹 조회, 멤버 관리 기능*/
 @Controller
 @RequestMapping("/groups")
 @RequiredArgsConstructor
@@ -25,9 +23,7 @@ public class GroupController {
     private final GroupService groupService;
     private final JoinRequestService joinRequestService;
 
-    /**
-     * 그룹 메인 페이지 (내가 속한 그룹 목록)
-     */
+    //그룹 메인 페이지 (내가 속한 그룹 목록)
     @GetMapping
     public String groupsMain(@RequestParam(required = false) String category,
                              Model model,
@@ -58,10 +54,7 @@ public class GroupController {
         return "groups";
     }
 
-    /**
-     * 그룹 상세 페이지
-     * @param groupId 그룹 ID
-     */
+    // 그룹 상세 페이지
     @GetMapping("/{groupId}")
     public String groupDetail(@PathVariable Long groupId,
                               Model model,
@@ -113,9 +106,7 @@ public class GroupController {
         }
     }
 
-    /**
-     * 그룹 탈퇴 처리
-     */
+    //그룹 탈퇴 처리
     @PostMapping("/{groupId}/leave")
     public String leaveGroup(@PathVariable Long groupId,
                              Authentication auth,
@@ -141,9 +132,7 @@ public class GroupController {
         }
     }
 
-    /**
-     * 멤버 강제 퇴장 (그룹장 권한)
-     */
+    // 멤버 강제 퇴장 (그룹장 권한)
     @PostMapping("/{groupId}/kick/{userId}")
     public String kickMember(@PathVariable Long groupId,
                              @PathVariable Long userId,
@@ -169,9 +158,7 @@ public class GroupController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 그룹장 위임
-     */
+    // 그룹장 위임
     @PostMapping("/{groupId}/transfer/{userId}")
     public String transferLeadership(@PathVariable Long groupId,
                                      @PathVariable Long userId,
@@ -197,9 +184,7 @@ public class GroupController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 그룹 해체 (그룹장만 가능)
-     */
+    //그룹 해체 (그룹장만 가능)
     @PostMapping("/{groupId}/delete")
     public String deleteGroup(@PathVariable Long groupId,
                               Authentication auth,
@@ -225,9 +210,7 @@ public class GroupController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 그룹 마감 (그룹장만 가능)
-     */
+    //그룹 마감 (그룹장만 가능)
     @PostMapping("/{groupId}/close")
     public String closeGroup(@PathVariable Long groupId,
                              Authentication auth,
@@ -252,9 +235,7 @@ public class GroupController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 그룹 마감 해제 (그룹장만 가능)
-     */
+    // 그룹 마감 해제 (그룹장만 가능)
     @PostMapping("/{groupId}/reopen")
     public String reopenGroup(@PathVariable Long groupId,
                               Authentication auth,

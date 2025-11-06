@@ -11,9 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-/**
- * 가입 신청 관리 컨트롤러 - 그룹 가입 신청/승인/거절 기능
- */
+/**가입 신청 관리 컨트롤러 - 그룹 가입 신청/승인/거절 기능*/
 @Controller
 @RequestMapping("/join-requests")
 @RequiredArgsConstructor
@@ -22,9 +20,7 @@ public class JoinRequestController {
     private final JoinRequestService joinRequestService;
     private final GroupService groupService;
 
-    /**
-     * 그룹 가입 신청 처리
-     */
+    // 그룹 가입 신청 처리
     @PostMapping("/request")
     public String requestJoin(@RequestParam Long groupId,
                               @RequestParam(required = false) String message,
@@ -50,9 +46,7 @@ public class JoinRequestController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 가입 신청 승인
-     */
+    // 가입 신청 승인
     @PostMapping("/{requestId}/approve")
     public String approveRequest(@PathVariable Long requestId,
                                  @RequestParam Long groupId,
@@ -78,9 +72,7 @@ public class JoinRequestController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 가입 신청 거절
-     */
+    // 가입 신청 거절
     @PostMapping("/{requestId}/reject")
     public String rejectRequest(@PathVariable Long requestId,
                                 @RequestParam Long groupId,
@@ -106,9 +98,7 @@ public class JoinRequestController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 가입 신청 취소 (신청자가 직접)
-     */
+    // 가입 신청 취소 (신청자가 직접)
     @PostMapping("/{requestId}/cancel")
     public String cancelRequest(@PathVariable Long requestId,
                                 @RequestParam Long groupId,
@@ -134,9 +124,7 @@ public class JoinRequestController {
         return "redirect:/groups/" + groupId;
     }
 
-    /**
-     * 내 가입 신청 내역 조회
-     */
+    // 내 가입 신청 내역 조회
     @GetMapping("/my-requests")
     public String myRequests(Authentication auth, Model model) {
         if (auth == null || !(auth.getPrincipal() instanceof CustomUser)) {
@@ -160,9 +148,7 @@ public class JoinRequestController {
         }
     }
 
-    /**
-     * 그룹장이 받은 가입 신청 목록
-     */
+    //그룹장이 받은 가입 신청 목록
     @GetMapping("/pending")
     public String pendingRequests(Authentication auth, Model model) {
         if (auth == null || !(auth.getPrincipal() instanceof CustomUser)) {

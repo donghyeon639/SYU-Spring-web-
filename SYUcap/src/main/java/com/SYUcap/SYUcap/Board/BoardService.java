@@ -3,6 +3,7 @@ package com.SYUcap.SYUcap.Board;
 import com.SYUcap.SYUcap.User.Users;
 import com.SYUcap.SYUcap.User.UserRepository;
 import com.SYUcap.SYUcap.User.CustomUser;
+import com.SYUcap.SYUcap.Group.GroupService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final GroupService groupService;
 
     @Transactional(readOnly = true)
     public List<Board> getAllSorted() {
@@ -61,7 +63,12 @@ public class BoardService {
         board.setLimitCount(limitCount);
         board.setUser(authorRef);
         board.setAuthorName(authorName);
-        return boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+
+        //게시글 작성 시 자동으로 그룹 생성
+        groupService.createGroupFromBoard(savedBoard);
+
+        return savedBoard;
     }
 
     public Board updatePost(Long id,

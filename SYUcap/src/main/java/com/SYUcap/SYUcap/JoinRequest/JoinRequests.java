@@ -10,9 +10,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-/**
- * 그룹 가입 신청 엔티티 - 사용자의 그룹 가입 신청을 관리
- */
+/**그룹 가입 신청 엔티티 - 사용자의 그룹 가입 신청을 관리*/
 @Entity
 @ToString
 @Getter
@@ -62,12 +60,7 @@ public class JoinRequests {
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Users processedBy;
 
-    /**
-     * 생성자 - 가입 신청 생성
-     * @param user 신청자
-     * @param group 신청할 그룹
-     * @param message 신청 메시지
-     */
+    //생성자 - 가입 신청 생성
     public JoinRequests(Users user, Groups group, String message) {
         this.user = user;
         this.group = group;
@@ -75,46 +68,31 @@ public class JoinRequests {
         this.requestedAt = LocalDateTime.now();
     }
 
-    /**
-     * 신청 승인 처리
-     * @param processedBy 처리자 (그룹장)
-     */
+    //신청 승인 처리
     public void approve(Users processedBy) {
         this.status = "APPROVED";
         this.processedAt = LocalDateTime.now();
         this.processedBy = processedBy;
     }
 
-    /**
-     * 신청 거절 처리
-     * @param processedBy 처리자 (그룹장)
-     */
+    // 신청 거절 처리
     public void reject(Users processedBy) {
         this.status = "REJECTED";
         this.processedAt = LocalDateTime.now();
         this.processedBy = processedBy;
     }
 
-    /**
-     * 대기 중인 신청인지 확인
-     * @return 대기 중이면 true, 아니면 false
-     */
+    // 대기 중인 신청인지 확인
     public boolean isPending() {
         return "PENDING".equals(this.status);
     }
 
-    /**
-     * 승인된 신청인지 확인
-     * @return 승인되었으면 true, 아니면 false
-     */
+    // 승인된 신청인지 확인
     public boolean isApproved() {
         return "APPROVED".equals(this.status);
     }
 
-    /**
-     * 거절된 신청인지 확인
-     * @return 거절되었으면 true, 아니면 false
-     */
+    //거절된 신청인지 확인
     public boolean isRejected() {
         return "REJECTED".equals(this.status);
     }

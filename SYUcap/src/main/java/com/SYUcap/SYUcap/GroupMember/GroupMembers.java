@@ -10,9 +10,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-/**
- * 그룹 멤버 엔티티 - Users와 Groups 간의 다대다 관계를 매핑
- */
+/**그룹 멤버 엔티티 - Users와 Groups 간의 다대다 관계를 매핑 */
 @Entity
 @ToString
 @Getter
@@ -48,23 +46,14 @@ public class GroupMembers {
     @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt;
 
-    /**
-     * 생성자 - 일반 멤버로 그룹 가입
-     * @param user 가입할 사용자
-     * @param group 가입할 그룹
-     */
+    //생성자 - 일반 멤버로 그룹 가입
     public GroupMembers(Users user, Groups group) {
         this.user = user;
         this.group = group;
         this.joinedAt = LocalDateTime.now();
     }
 
-    /**
-     * 생성자 - 역할을 지정하여 그룹 가입 (그룹장 생성 시 사용)
-     * @param user 가입할 사용자
-     * @param group 가입할 그룹
-     * @param role 역할 (LEADER 또는 MEMBER)
-     */
+    //생성자 - 역할을 지정하여 그룹 가입 (그룹장 생성 시 사용)
     public GroupMembers(Users user, Groups group, String role) {
         this.user = user;
         this.group = group;
@@ -72,10 +61,7 @@ public class GroupMembers {
         this.joinedAt = LocalDateTime.now();
     }
 
-    /**
-     * 그룹장인지 확인
-     * @return 그룹장이면 true, 아니면 false
-     */
+    //그룹장인지 확인@return 그룹장이면 true, 아니면 false
     public boolean isLeader() {
         return "LEADER".equals(this.role);
     }

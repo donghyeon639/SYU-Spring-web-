@@ -13,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * 가입 신청 서비스 - 그룹 가입 신청/승인/거절 관리
- */
+/**가입 신청 서비스 - 그룹 가입 신청/승인/거절 관리*/
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,14 +24,7 @@ public class JoinRequestService {
     private final GroupsRepository groupsRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 그룹 가입 신청
-     * @param userId 신청자 ID
-     * @param groupId 그룹 ID
-     * @param message 신청 메시지
-     * @return 생성된 가입 신청
-     * @throws IllegalStateException 이미 멤버이거나 신청한 경우, 그룹이 가득 찬 경우
-     */
+    // 그룹 가입 신청
     public JoinRequests requestJoin(Long userId, Long groupId, String message) {
         // 1. 사용자와 그룹 존재 확인
         Users user = userRepository.findById(userId)
@@ -66,12 +57,7 @@ public class JoinRequestService {
         return joinRequestsRepository.save(joinRequest);
     }
 
-    /**
-     * 가입 신청 승인
-     * @param requestId 신청 ID
-     * @param leaderId 처리자(그룹장) ID
-     * @throws IllegalStateException 권한이 없거나 이미 처리된 경우, 그룹이 가득 찬 경우
-     */
+    // 가입 신청 승인
     public void approveJoinRequest(Long requestId, Long leaderId) {
         // 1. 가입 신청 조회
         JoinRequests joinRequest = joinRequestsRepository.findById(requestId)
@@ -109,12 +95,7 @@ public class JoinRequestService {
         groupsRepository.save(group);
     }
 
-    /**
-     * 가입 신청 거절
-     * @param requestId 신청 ID
-     * @param leaderId 처리자(그룹장) ID
-     * @throws IllegalStateException 권한이 없거나 이미 처리된 경우
-     */
+    //가입 신청 거절
     public void rejectJoinRequest(Long requestId, Long leaderId) {
         // 1. 가입 신청 조회
         JoinRequests joinRequest = joinRequestsRepository.findById(requestId)
@@ -139,12 +120,7 @@ public class JoinRequestService {
         joinRequestsRepository.save(joinRequest);
     }
 
-    /**
-     * 가입 신청 취소 (신청자가 직접)
-     * @param requestId 신청 ID
-     * @param userId 신청자 ID
-     * @throws IllegalStateException 권한이 없거나 이미 처리된 경우
-     */
+    //가입 신청 취소 (신청자가 직접)
     public void cancelJoinRequest(Long requestId, Long userId) {
         // 1. 가입 신청 조회
         JoinRequests joinRequest = joinRequestsRepository.findById(requestId)
@@ -164,25 +140,19 @@ public class JoinRequestService {
         joinRequestsRepository.delete(joinRequest);
     }
 
-    /**
-     * 사용자의 가입 신청 내역 조회
-     */
+    // 사용자의 가입 신청 내역 조회
     @Transactional(readOnly = true)
     public List<JoinRequests> getUserJoinRequests(Long userId) {
         return joinRequestsRepository.findByUserIdOrderByRequestedAtDesc(userId);
     }
 
-    /**
-     * 그룹장이 처리해야 할 대기 중인 신청 조회
-     */
+    // 그룹장이 처리해야 할 대기 중인 신청 조회
     @Transactional(readOnly = true)
     public List<JoinRequests> getPendingRequestsForLeader(Long leaderId) {
         return joinRequestsRepository.findPendingRequestsByLeaderId(leaderId);
     }
 
-    /**
-     * 특정 그룹의 가입 신청 내역 조회 (상태별)
-     */
+    // 특정 그룹의 가입 신청 내역 조회 (상태별)
     @Transactional(readOnly = true)
     public List<JoinRequests> getJoinRequestsByGroup(Long groupId, String status) {
         if (status != null && !status.isEmpty()) {
@@ -191,17 +161,13 @@ public class JoinRequestService {
         return joinRequestsRepository.findByGroupIdOrderByRequestedAtDesc(groupId);
     }
 
-    /**
-     * 사용자가 특정 그룹에 대기 중인 신청이 있는지 확인
-     */
+    //사용자가 특정 그룹에 대기 중인 신청이 있는지 확인
     @Transactional(readOnly = true)
     public boolean hasPendingRequest(Long userId, Long groupId) {
         return joinRequestsRepository.existsPendingRequestByUserIdAndGroupId(userId, groupId);
     }
 
-    /**
-     * 특정 그룹의 대기 중인 가입 신청 조회
-     */
+    // 특정 그룹의 대기 중인 가입 신청 조회
     @Transactional(readOnly = true)
     public List<JoinRequests> getPendingJoinRequests(Long groupId) {
         return joinRequestsRepository.findByGroupIdAndStatusOrderByRequestedAt(groupId, "PENDING");

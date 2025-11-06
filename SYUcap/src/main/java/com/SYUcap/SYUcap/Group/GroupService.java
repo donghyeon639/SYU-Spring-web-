@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * 그룹 서비스 - 그룹 생성, 조회, 관리 기능
- */
+/**그룹 서비스 - 그룹 생성, 조회, 관리 기능*/
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,11 +26,7 @@ public class GroupService {
     private final JoinRequestsRepository joinRequestsRepository;
     private final BoardRepository boardRepository;
 
-    /**
-     * 게시글 작성 시 자동으로 그룹 생성
-     * @param board 생성된 게시글
-     * @return 생성된 그룹
-     */
+    //게시글 작성 시 자동으로 그룹 생성
     public Groups createGroupFromBoard(Board board) {
         // 1. 그룹 생성
         Groups group = new Groups(board);
@@ -45,41 +39,25 @@ public class GroupService {
         return savedGroup;
     }
 
-    /**
-     * 그룹 상세 조회 (Board ID로)
-     * @param boardId 게시글 ID
-     * @return 그룹 정보
-     */
+    // 그룹 상세 조회 (Board ID로)
     @Transactional(readOnly = true)
     public Optional<Groups> getGroupByBoardId(Long boardId) {
         return groupsRepository.findByBoardId(boardId);
     }
 
-    /**
-     * 그룹 ID로 조회
-     * @param groupId 그룹 ID
-     * @return 그룹 정보
-     */
+    // 그룹 ID로 조회
     @Transactional(readOnly = true)
     public Optional<Groups> getGroupById(Long groupId) {
         return groupsRepository.findById(groupId);
     }
 
-    /**
-     * 사용자가 리더인 그룹들 조회
-     * @param userId 사용자 ID
-     * @return 리더인 그룹 리스트
-     */
+    // 사용자가 리더인 그룹들 조회
     @Transactional(readOnly = true)
     public List<Groups> getGroupsByLeader(Long userId) {
         return groupsRepository.findByLeaderIdOrderByCreatedAtDesc(userId);
     }
 
-    /**
-     * 그룹 멤버 목록 조회
-     * @param groupId 그룹 ID
-     * @return 그룹 멤버 리스트
-     */
+    // 그룹 멤버 목록 조회
     @Transactional(readOnly = true)
     public List<GroupMembers> getGroupMembers(Long groupId) {
         return groupMembersRepository.findByGroupIdOrderByJoinedAt(groupId);
@@ -95,45 +73,26 @@ public class GroupService {
         return groupMembersRepository.findByGroupIdAndRole(groupId, "LEADER");
     }
 
-    /**
-     * 사용자가 그룹 멤버인지 확인
-     * @param userId 사용자 ID
-     * @param groupId 그룹 ID
-     * @return 멤버이면 true, 아니면 false
-     */
+    //사용자가 그룹 멤버인지 확인@return 멤버이면 true, 아니면 false
     @Transactional(readOnly = true)
     public boolean isMember(Long userId, Long groupId) {
         return groupMembersRepository.findByUserIdAndGroupId(userId, groupId).isPresent();
     }
 
-    /**
-     * 사용자가 그룹 리더인지 확인
-     * @param userId 사용자 ID
-     * @param groupId 그룹 ID
-     * @return 리더이면 true, 아니면 false
-     */
+    //사용자가 그룹 리더인지 확인@return 리더이면 true, 아니면 false
     @Transactional(readOnly = true)
     public boolean isLeader(Long userId, Long groupId) {
         Optional<GroupMembers> member = groupMembersRepository.findByUserIdAndGroupId(userId, groupId);
         return member.isPresent() && member.get().isLeader();
     }
 
-    /**
-     * 사용자가 참여 중인 그룹들 조회
-     * @param userId 사용자 ID
-     * @return 참여 중인 그룹 멤버 리스트
-     */
+    // 사용자가 참여 중인 그룹들 조회
     @Transactional(readOnly = true)
     public List<GroupMembers> getUserGroups(Long userId) {
         return groupMembersRepository.findByUserIdOrderByJoinedAtDesc(userId);
     }
 
-    /**
-     * 그룹 멤버 탈퇴 처리
-     * @param userId 사용자 ID
-     * @param groupId 그룹 ID
-     * @throws IllegalArgumentException 그룹장은 탈퇴할 수 없음
-     */
+    //그룹 멤버 탈퇴 처리
     public void leaveGroup(Long userId, Long groupId) {
         Optional<GroupMembers> memberOpt = groupMembersRepository.findByUserIdAndGroupId(userId, groupId);
 
@@ -155,12 +114,7 @@ public class GroupService {
         }
     }
 
-    /**
-     * 카테고리별 내 그룹 조회 (참여 중인 그룹) - 그룹장인 그룹은 제외
-     * @param userId 사용자 ID
-     * @param category 카테고리 (null이면 전체)
-     * @return 카테고리별 참여 그룹 리스트 (그룹장 제외)
-     */
+    //카테고리별 내 그룹 조회 (참여 중인 그룹) - 그룹장인 그룹은 제외
     @Transactional(readOnly = true)
     public List<GroupMembers> getUserGroupsByCategory(Long userId, String category) {
         List<GroupMembers> allGroups;
@@ -176,12 +130,7 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 카테고리별 내가 만든 그룹 조회
-     * @param userId 사용자 ID
-     * @param category 카테고리 (null이면 전체)
-     * @return 카테고리별 리더 그룹 리스트
-     */
+    // 카테고리별 내가 만든 그룹 조회
     @Transactional(readOnly = true)
     public List<Groups> getLeaderGroupsByCategory(Long userId, String category) {
         if (category == null || category.trim().isEmpty()) {
@@ -190,13 +139,7 @@ public class GroupService {
         return groupsRepository.findByLeaderIdAndCategoryOrderByCreatedAtDesc(userId, category);
     }
 
-    /**
-     * 멤버 강제 퇴장 (그룹장 권한)
-     * @param userId 퇴장시킬 사용자 ID
-     * @param groupId 그룹 ID
-     * @param leaderId 그룹장 ID (권한 확인용)
-     * @throws IllegalStateException 권한이 없거나 그룹장을 퇴장시키려는 경우
-     */
+    // 멤버 강제 퇴장 (그룹장 권한)
     public void kickMember(Long userId, Long groupId, Long leaderId) {
         // 1. 그룹장 권한 확인
         if (!isLeader(leaderId, groupId)) {
@@ -225,13 +168,7 @@ public class GroupService {
         groupsRepository.save(group);
     }
 
-    /**
-     * 그룹장 위임
-     * @param currentLeaderId 현재 그룹장 ID
-     * @param newLeaderId 새 그룹장 ID
-     * @param groupId 그룹 ID
-     * @throws IllegalStateException 권한이 없거나 새 리더가 멤버가 아닌 경우
-     */
+    // 그룹장 위임
     public void transferLeadership(Long currentLeaderId, Long newLeaderId, Long groupId) {
         // 1. 현재 그룹장 권한 확인
         if (!isLeader(currentLeaderId, groupId)) {
@@ -257,12 +194,7 @@ public class GroupService {
         groupMembersRepository.save(newLeader);
     }
 
-    /**
-     * 그룹 해체 (그룹장만 가능)
-     * @param groupId 그룹 ID
-     * @param leaderId 그룹장 ID (권한 확인용)
-     * @throws IllegalStateException 권한이 없는 경우
-     */
+    //그룹 해체 (그룹장만 가능)
     public void deleteGroup(Long groupId, Long leaderId) {
         // 1. 그룹장 권한 확인
         if (!isLeader(leaderId, groupId)) {
@@ -288,12 +220,7 @@ public class GroupService {
         boardRepository.delete(board);
     }
 
-    /**
-     * 그룹 마감 (그룹장만 가능)
-     * @param groupId 그룹 ID
-     * @param leaderId 그룹장 ID (권한 확인용)
-     * @throws IllegalStateException 권한이 없는 경우
-     */
+    // 그룹 마감 (그룹장만 가능)
     public void closeGroup(Long groupId, Long leaderId) {
         // 1. 그룹장 권한 확인
         if (!isLeader(leaderId, groupId)) {
@@ -323,9 +250,7 @@ public class GroupService {
         joinRequestsRepository.saveAll(pendingRequests);
     }
 
-    /**
-     * 그룹 마감 해제 (그룹장만 가능)
-     */
+    //그룹 마감 해제 (그룹장만 가능)
     public void reopenGroup(Long groupId, Long leaderId) {
         // 1. 그룹장 권한 확인
         if (!isLeader(leaderId, groupId)) {

@@ -11,9 +11,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import com.SYUcap.SYUcap.User.UserRepository;
 import com.SYUcap.SYUcap.User.CustomUser;
+import com.SYUcap.SYUcap.Group.GroupService;
+import com.SYUcap.SYUcap.Group.Groups;
+import com.SYUcap.SYUcap.JoinRequest.JoinRequestService;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +26,8 @@ public class BoardController {
 
     private final BoardService boardService;
     private final UserRepository userRepository;
+    private final GroupService groupService;
+    private final JoinRequestService joinRequestService;
 
     /** 전체 목록 */
     @GetMapping
@@ -78,7 +84,7 @@ public class BoardController {
 
     /** 글 상세 보기 */
     @GetMapping("/{cat}/{id}")
-    public String detail(@PathVariable String cat, @PathVariable Long id, Model model) {
+    public String detail(@PathVariable String cat, @PathVariable Long id, Model model,Authentication auth) {
         Board board = boardService.getById(id); // 존재하지 않으면 예외
         if (!cat.equals(board.getCategory())) {
             // URL의 카테고리와 실제 글의 카테고리가 다르면 해당 카테고리로 리다이렉트
@@ -87,6 +93,24 @@ public class BoardController {
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
+
+        Optional<Groups> groupOpt = groupService.getGroupByBoardId(id);
+        if (groupOpt.isPresent()) {
+            Groups group = groupOpt.get();
+            model.addAttribute("group", group);
+
+            // 로그인한 경우 사용자 상태 확인
+            if (auth != null && auth.getPrincipal() instanceof CustomUser) {
+                CustomUser currentUser = (CustomUser) auth.getPrincipal();
+                boolean isMember = groupService.isMember(currentUser.getId(), group.getId());
+                boolean isLeader = groupService.isLeader(currentUser.getId(), group.getId());
+                boolean hasPendingRequest = joinRequestService.hasPendingRequest(currentUser.getId(), group.getId());
+
+                model.addAttribute("isMember", isMember);
+                model.addAttribute("isLeader", isLeader);
+                model.addAttribute("hasPendingRequest", hasPendingRequest);
+            }
+        }
         return "board-detail";
     }
 
