@@ -1,7 +1,7 @@
-package com.SYUcap.SYUcap.Board;
+package com.SYUcap.SYUcap.Comment;
 
-import com.SYUcap.SYUcap.Comment.Comment;
-import com.SYUcap.SYUcap.Comment.CommentRepository;
+import com.SYUcap.SYUcap.Board.Board;
+import com.SYUcap.SYUcap.Board.BoardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
