@@ -30,15 +30,41 @@
         <hr>
         <div th:text="${post.content}">내용</div>
 
-        <div class="form-actions">
-            <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
-            <div style="display:inline; margin-left: 10px;">
-                <a th:href="@{/board/{cat}/{id}/edit(cat=${category}, id=${post.id})}"
-                   style="background-color: #4CAF50; text-decoration: none; padding: 10px 20px; border-radius: 4px; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; line-height: 1.5;">수정</a>
-                <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline; margin-left: 5px;">
-                    <button type="submit" style="background-color: #f44336; padding: 10px 20px; border-radius: 4px; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; line-height: 1.5;">삭제</button>
-                </form>
+        <hr>
+
+        <div class="comment-form">
+            <h4>댓글 쓰기</h4>
+            <form th:action="@{/board/{cat}/{id}/comment(cat=${category}, id=${post.id})}" method="post">
+                <textarea name="content" rows="3" placeholder="댓글을 입력하세요..." required style="width: 95%;"></textarea>
+                <div class="form-actions" style="text-align: right; margin-top: 8px;">
+                    <button type="submit" class="qa-btn">등록</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="comment-list" style="margin-top: 20px;">
+            <h4>댓글 목록</h4>
+
+            <div th:if="${!comments.isEmpty()}" th:each="comment : ${comments}" class="comment-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                <p style="margin-bottom: 4px;">
+                    <strong th:text="${comment.authorName}">작성자</strong>
+                    <span classs="muted" style="font-size: 0.9em; color: #777; margin-left: 10px;"
+                          th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
+                </p>
+                <p th:text="${comment.content}" style="margin-top: 0; white-space: pre-wrap;">댓글 내용입니다.</p>
             </div>
+
+            <div th:if="${comments.isEmpty()}">
+                <p class="muted">아직 댓글이 없습니다.</p>
+            </div>
+        </div>
+
+
+        <div class="form-actions" style="margin-top: 20px;">
+            <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
+            <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline">
+                <button type="submit" class="danger">삭제</button>
+            </form>
         </div>
     </section>
 </main>

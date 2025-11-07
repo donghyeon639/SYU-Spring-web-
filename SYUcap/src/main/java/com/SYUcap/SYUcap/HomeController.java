@@ -30,13 +30,6 @@ public class HomeController {
         model.addAttribute("recentPosts", recentPosts);
         return "home";
     }
-
-    @GetMapping("/groups")
-    public String groups(Model model) {
-        model.addAttribute("active", "groups");
-        return "groups";
-    }
-
     @GetMapping("/notifications")
     public String notifications(Model model) {
         model.addAttribute("active", "notifications");

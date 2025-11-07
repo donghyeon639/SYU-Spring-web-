@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 /**그룹 엔티티 - Board와 1:1 관계를 가지며, 그룹의 상세 정보를 관리*/
 @Entity
 @ToString
+@Table(name = "groups_tbl")
 @Getter
 @Setter
 @NoArgsConstructor
