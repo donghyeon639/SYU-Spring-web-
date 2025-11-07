@@ -18,6 +18,7 @@ import com.SYUcap.SYUcap.User.CustomUser;
 import com.SYUcap.SYUcap.Group.GroupService;
 import com.SYUcap.SYUcap.Group.Groups;
 import com.SYUcap.SYUcap.JoinRequest.JoinRequestService;
+import com.SYUcap.SYUcap.Comment.CommentService;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class BoardController {
     private final UserRepository userRepository;
     private final GroupService groupService;
     private final JoinRequestService joinRequestService;
+    private final CommentService commentService; // 댓글 서비스 주입
 
     /** 전체 목록 */
     @GetMapping
@@ -93,6 +95,9 @@ public class BoardController {
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
+
+        // 댓글 목록 모델 추가
+        model.addAttribute("comments", commentService.getCommentsByBoardId(id));
 
         Optional<Groups> groupOpt = groupService.getGroupByBoardId(id);
         if (groupOpt.isPresent()) {

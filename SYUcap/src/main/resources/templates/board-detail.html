@@ -45,7 +45,7 @@
         <div class="comment-list" style="margin-top: 20px;">
             <h4>댓글 목록</h4>
 
-            <div th:if="${!comments.isEmpty()}" th:each="comment : ${comments}" class="comment-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <div th:if="${comments != null and !#lists.isEmpty(comments)}" th:each="comment : ${comments}" class="comment-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
                 <p style="margin-bottom: 4px;">
                     <strong th:text="${comment.authorName}">작성자</strong>
                     <span classs="muted" style="font-size: 0.9em; color: #777; margin-left: 10px;"
@@ -54,7 +54,7 @@
                 <p th:text="${comment.content}" style="margin-top: 0; white-space: pre-wrap;">댓글 내용입니다.</p>
             </div>
 
-            <div th:if="${comments.isEmpty()}">
+            <div th:if="${comments == null or #lists.isEmpty(comments)}">
                 <p class="muted">아직 댓글이 없습니다.</p>
             </div>
         </div>
