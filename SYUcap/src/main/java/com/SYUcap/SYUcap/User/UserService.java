@@ -10,7 +10,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void addUser(String userId, String password, String username, String passwordConfirm) {
+    public void addUser(String userId, String password, String passwordConfirm,String username) {
         // 아이디 중복 검사
         if (userRepository.findByUserId(userId).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
