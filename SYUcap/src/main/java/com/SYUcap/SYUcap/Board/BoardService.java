@@ -29,4 +29,11 @@ public class BoardService {
     public void delete(Long id) {
         boardRepository.deleteById(id);
     }
+
+    public List<Board> searchBoards(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return boardRepository.findAll();
+        }
+        return boardRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+    }
 }

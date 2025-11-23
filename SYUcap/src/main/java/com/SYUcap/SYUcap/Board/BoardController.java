@@ -71,9 +71,24 @@ public class BoardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingStartTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime meetingEndTime,
             @RequestParam(required = false) Integer limitCount,
-            @RequestParam(defaultValue = "익명") String authorName
+            @RequestParam(defaultValue = "익명") String authorName,
+            Model model
     ) {
         validateCategory(cat);
+
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("category", cat);
+            model.addAttribute("post", new Board());
+            model.addAttribute("errorMessage", "제목을 입력하세요");
+            return "board-form";
+        }
+
+        if (content == null || content.trim().isEmpty()) {
+            model.addAttribute("category", cat);
+            model.addAttribute("post", new Board());
+            model.addAttribute("errorMessage", "내용을 입력하세요");
+            return "board-form";
+        }
 
         Board board = new Board();
         board.setCategory(cat);
@@ -119,5 +134,17 @@ public class BoardController {
         if (!ALLOWED.contains(cat)) {
             throw new IllegalArgumentException("Unknown category: " + cat);
         }
+    }
+
+    /** 게시글 검색 */
+    @GetMapping("/search")
+    public String search(@RequestParam String keyword, Model model) {
+        List<Board> boards = boardService.searchBoards(keyword);
+
+        model.addAttribute("active", "home");
+        model.addAttribute("category", "검색결과");
+        model.addAttribute("posts", boards);
+
+        return "board-list";
     }
 }
