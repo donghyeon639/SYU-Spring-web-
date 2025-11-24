@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class GroupServiceUnitTest {
+class GroupUnitTest {
 
     @Mock
     private GroupsRepository groupsRepository;

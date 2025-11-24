@@ -21,13 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 import static org.assertj.core.api.Assertions.*;
+
 
 @SpringBootTest
 @Transactional
@@ -56,7 +53,7 @@ class GroupIntegrationTest {
     private JoinRequestsRepository joinRequestsRepository;
 
     @Autowired
-    private EntityManager entityManager;  // ✅ 추가
+    private EntityManager entityManager;
 
     private Users testUser;
     private Board testBoard;
@@ -157,6 +154,7 @@ class GroupIntegrationTest {
         // 3. isFull() 메서드가 true를 반환하는가?
         assertThat(updatedGroup.isFull()).isTrue();
     }
+
     @Test
     @DisplayName("TC-G-005: 그룹장의 멤버 강제 퇴장")
     void testKickMember() {
@@ -428,17 +426,17 @@ class GroupIntegrationTest {
         // 1. 먼저 마감 시도
         try {
             groupService.closeGroup(groupId, testUser.id);
-            System.out.println("✅ 그룹 마감 성공");
+            System.out.println("그룹 마감 성공");
         } catch (Exception e) {
-            System.out.println("❌ 그룹 마감 실패: " + e.getMessage());
+            System.out.println("그룹 마감 실패: " + e.getMessage());
         }
 
         // 2. 그 다음 승인 시도 (마감된 그룹에 승인 시도)
         try {
             joinRequestService.approveJoinRequest(requestId, testUser.id);
-            System.out.println("✅ 신청 승인 성공");
+            System.out.println("신청 승인 성공");
         } catch (Exception e) {
-            System.out.println("❌ 신청 승인 실패: " + e.getMessage());
+            System.out.println("신청 승인 실패: " + e.getMessage());
         }
 
         // Then: 검증
@@ -458,6 +456,6 @@ class GroupIntegrationTest {
         assertThat(finalRequest.getStatus()).isEqualTo("REJECTED");
 
         // 3. 승인 시도는 실패해야 함 (이미 처리된 신청)
-        System.out.println("✅ 마감 후 대기 신청이 자동으로 거절됨 - 정상 동작");
+        System.out.println("마감 후 대기 신청이 자동으로 거절됨 - 정상 동작");
     }
 }

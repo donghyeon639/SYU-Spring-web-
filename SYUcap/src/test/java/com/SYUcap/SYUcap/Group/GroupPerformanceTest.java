@@ -135,12 +135,12 @@ class GroupPerformanceTest {
         List<Users> users = new ArrayList<>();
         for (int i = 1; i <= 200; i++) {
             Users user = new Users();
-            user.setUserId("creator_" + System.currentTimeMillis() + "_" + i);  // ✅ 고유한 ID 생성
+            user.setUserId("creator_" + System.currentTimeMillis() + "_" + i);
             user.setPassword("password123!");
             user.setUserName("생성자" + i);
             users.add(userRepository.save(user));
 
-            // ✅ 추가: 약간의 지연으로 타임스탬프 중복 방지
+
             if (i % 50 == 0) {
                 Thread.sleep(10);
             }
@@ -160,7 +160,7 @@ class GroupPerformanceTest {
             executor.submit(() -> {
                 try {
                     Board board = new Board();
-                    board.setTitle("그룹 " + finalI + "_" + System.currentTimeMillis());  // ✅ 고유한 제목
+                    board.setTitle("그룹 " + finalI + "_" + System.currentTimeMillis());
                     board.setContent("내용 " + finalI);
                     board.setLimitCount(5);
                     board.setUser(user);
@@ -265,7 +265,6 @@ class GroupPerformanceTest {
         Groups group = groupService.createGroupFromBoard(board);
         Long groupId = group.getId();
 
-        // ✅ 추가: 그룹을 다시 조회해서 영속 상태로 만들기
         group = groupsRepository.findById(groupId).orElseThrow();
 
         // 멤버 100명 추가
