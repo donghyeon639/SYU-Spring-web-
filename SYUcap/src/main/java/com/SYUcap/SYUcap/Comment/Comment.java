@@ -1,6 +1,7 @@
 package com.SYUcap.SYUcap.Comment;
 
 import com.SYUcap.SYUcap.Board.Board;
+import com.SYUcap.SYUcap.User.Users; // Users 엔티티 import
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,18 +14,24 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 댓글 ID
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
-    private String content; // 댓글 내용
+    private String content;
 
-    private String authorName; // 댓글 작성자 이름 (Users 엔티티와 직접 연결 X)
+    // 편의상 남겨둠 (화면에 이름 보여줄 때 사용)
+    private String authorName;
 
-    private LocalDateTime createdAt; // 댓글 작성 시간
+    private LocalDateTime createdAt;
 
-    // '하나의' 게시글(Board)에 '많은' 댓글(Comment)이 달릴 수 있음
-    @ManyToOne
-    private Board board; // 이 댓글이 속한 게시글
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    // [추가] 댓글 작성자 (Users 엔티티와 연결)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // DB에 user_id 컬럼으로 저장됨
+    private Users user;
 
     @PrePersist
     protected void onCreate() {

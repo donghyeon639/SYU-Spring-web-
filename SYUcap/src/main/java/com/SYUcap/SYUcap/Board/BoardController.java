@@ -26,10 +26,9 @@ import com.SYUcap.SYUcap.Comment.CommentService;
 public class BoardController {
 
     private final BoardService boardService;
-    private final UserRepository userRepository;
     private final GroupService groupService;
     private final JoinRequestService joinRequestService;
-    private final CommentService commentService; // 댓글 서비스 주입
+    private final CommentService commentService;
 
     /** 전체 목록 */
     @GetMapping
@@ -62,7 +61,7 @@ public class BoardController {
         }
         model.addAttribute("authorName", authorName);
         model.addAttribute("post", new Board());
-        model.addAttribute("isEdit", false);  // 새 글 작성
+        model.addAttribute("isEdit", false);
         return "board-form";
     }
 
@@ -78,33 +77,37 @@ public class BoardController {
             @RequestParam(required = false) Integer limitCount,
             Authentication auth
     ) {
-        // 로그인 사용자 정보(Authentication) 전달하여 작성자 연결
         boardService.createPost(cat, title, content, location, meetingStartTime, meetingEndTime, limitCount, auth);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
-        return "redirect:/board/" + encodedCat; // 저장 후 목록으로
+        return "redirect:/board/" + encodedCat;
     }
 
-    /** 글 상세 보기 */
+    /** 글 상세 보기 (수정됨: currentUserId 전달) */
     @GetMapping("/{cat}/{id}")
-    public String detail(@PathVariable String cat, @PathVariable Long id, Model model,Authentication auth) {
-        Board board = boardService.getById(id); // 존재하지 않으면 예외
+    public String detail(@PathVariable String cat, @PathVariable Long id, Model model, Authentication auth) {
+        Board board = boardService.getById(id);
         if (!cat.equals(board.getCategory())) {
-            // URL의 카테고리와 실제 글의 카테고리가 다르면 해당 카테고리로 리다이렉트
             return "redirect:/board/" + board.getCategory() + "/" + id;
         }
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
 
-        // 댓글 목록 모델 추가
+        // 댓글 목록
         model.addAttribute("comments", commentService.getCommentsByBoardId(id));
+
+        // [추가] 현재 로그인한 사용자 아이디 확인 (버튼 표시용)
+        String currentUserId = null;
+        if (auth != null && auth.getPrincipal() instanceof CustomUser cu) {
+            currentUserId = cu.getUserName();
+        }
+        model.addAttribute("currentUserId", currentUserId);
 
         Optional<Groups> groupOpt = groupService.getGroupByBoardId(id);
         if (groupOpt.isPresent()) {
             Groups group = groupOpt.get();
             model.addAttribute("group", group);
 
-            // 로그인한 경우 사용자 상태 확인
             if (auth != null && auth.getPrincipal() instanceof CustomUser) {
                 CustomUser currentUser = (CustomUser) auth.getPrincipal();
                 boolean isMember = groupService.isMember(currentUser.getId(), group.getId());
@@ -130,7 +133,7 @@ public class BoardController {
         model.addAttribute("category", cat);
         model.addAttribute("post", board);
         model.addAttribute("authorName", board.getAuthorName());
-        model.addAttribute("isEdit", true);  // 수정 모드
+        model.addAttribute("isEdit", true);
         return "board-form";
     }
 
@@ -148,7 +151,7 @@ public class BoardController {
     ) {
         boardService.updatePost(id, title, content, location, meetingStartTime, meetingEndTime, limitCount);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
-        return "redirect:/board/" + encodedCat + "/" + id; // 수정 후 상세페이지로
+        return "redirect:/board/" + encodedCat + "/" + id;
     }
 
     /** 글 삭제 */

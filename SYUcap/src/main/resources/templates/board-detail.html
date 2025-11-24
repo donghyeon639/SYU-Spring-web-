@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title th:text="${post.title}">게시글 상세</title>
     <link rel="stylesheet" th:href="@{/app.css}">
+    <script>
+        // 댓글 수정 폼 토글 기능
+        function toggleEditForm(commentId) {
+            var viewDiv = document.getElementById('comment-view-' + commentId);
+            var editDiv = document.getElementById('comment-edit-' + commentId);
+
+            if (editDiv.style.display === 'none') {
+                editDiv.style.display = 'block';
+                viewDiv.style.display = 'none';
+            } else {
+                editDiv.style.display = 'none';
+                viewDiv.style.display = 'block';
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -34,7 +49,10 @@
 
         <div class="comment-form">
             <h4>댓글 쓰기</h4>
-            <form th:action="@{/board/{cat}/{id}/comment(cat=${category}, id=${post.id})}" method="post">
+            <form th:action="@{/comments/write}" method="post">
+                <input type="hidden" name="boardId" th:value="${post.id}">
+                <input type="hidden" name="cat" th:value="${category}">
+
                 <textarea name="content" rows="3" placeholder="댓글을 입력하세요..." required style="width: 95%;"></textarea>
                 <div class="form-actions" style="text-align: right; margin-top: 8px;">
                     <button type="submit" class="qa-btn">등록</button>
@@ -51,7 +69,40 @@
                     <span classs="muted" style="font-size: 0.9em; color: #777; margin-left: 10px;"
                           th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
                 </p>
-                <p th:text="${comment.content}" style="margin-top: 0; white-space: pre-wrap;">댓글 내용입니다.</p>
+
+                <div th:id="'comment-view-' + ${comment.id}">
+                    <p th:text="${comment.content}" style="margin-top: 0; white-space: pre-wrap;">댓글 내용</p>
+
+                    <div class="form-actions"
+                         style="margin-top: 5px; display: flex; gap: 5px;"
+                         th:if="${comment.user != null and currentUserId != null and comment.user.userId == currentUserId}">
+
+                        <button type="button" class="qa-btn" th:onclick="'toggleEditForm(' + ${comment.id} + ')'" style="font-size: 0.8em; padding: 4px 8px;">수정</button>
+
+                        <form th:action="@{/comments/delete}" method="post" style="margin:0;">
+                            <input type="hidden" name="boardId" th:value="${post.id}">
+                            <input type="hidden" name="cat" th:value="${category}">
+                            <input type="hidden" name="commentId" th:value="${comment.id}">
+
+                            <button type="submit" class="qa-btn" style="font-size: 0.8em; padding: 4px 8px;" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:id="'comment-edit-' + ${comment.id}" style="display: none;">
+                    <form th:action="@{/comments/update}" method="post">
+                        <input type="hidden" name="boardId" th:value="${post.id}">
+                        <input type="hidden" name="cat" th:value="${category}">
+                        <input type="hidden" name="commentId" th:value="${comment.id}">
+
+                        <textarea name="content" rows="3" style="width: 95%;" th:text="${comment.content}"></textarea>
+                        <div class="form-actions" style="margin-top: 5px; display: flex; gap: 5px;">
+                            <button type="submit" class="qa-btn" style="font-size: 0.8em; padding: 4px 8px;">수정 완료</button>
+                            <button type="button" class="qa-btn" th:onclick="'toggleEditForm(' + ${comment.id} + ')'" style="font-size: 0.8em; padding: 4px 8px;">취소</button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
 
             <div th:if="${comments == null or #lists.isEmpty(comments)}">
@@ -59,16 +110,14 @@
             </div>
         </div>
 
-
         <div class="form-actions" style="margin-top: 20px;">
             <a class="qa-btn" th:href="@{/board/{cat}(cat=${category})}">← 목록</a>
             <form th:action="@{/board/{cat}/{id}/delete(cat=${category}, id=${post.id})}" method="post" style="display:inline">
-                <button type="submit" class="danger">삭제</button>
+                <button type="submit" class="qa-btn" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
             </form>
         </div>
     </section>
 </main>
-
 <footer>
     <nav>
         <a th:href="@{/home}" th:classappend="${active}=='home' ? 'active' : ''"><span class="icon">🏠</span><span>홈</span></a>
@@ -77,6 +126,5 @@
         <a th:href="@{/mypage}" th:classappend="${active}=='mypage' ? 'active' : ''"><span class="icon">🙍</span><span>마이</span></a>
     </nav>
 </footer>
-
 </body>
 </html>
