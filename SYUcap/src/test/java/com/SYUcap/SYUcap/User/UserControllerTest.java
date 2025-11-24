@@ -95,10 +95,11 @@ public class UserControllerTest {
                 .param("passwordConfirm", confirm)
                 .param("userName", name))
                 .andExpect(status().isOk());
-        // when/then
+        // when
         mockMvc.perform(post("/login")
                 .param("userId", userId)
                 .param("password", rawPw))
+        //then
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
     }

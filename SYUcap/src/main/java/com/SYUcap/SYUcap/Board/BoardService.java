@@ -1,16 +1,9 @@
 package com.SYUcap.SYUcap.Board;
 
-import com.SYUcap.SYUcap.User.Users;
-import com.SYUcap.SYUcap.User.UserRepository;
-import com.SYUcap.SYUcap.User.CustomUser;
-import com.SYUcap.SYUcap.Group.GroupService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,76 +12,28 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
-    private final GroupService groupService;
 
-    @Transactional(readOnly = true)
-    public List<Board> getAllSorted() {
-        return boardRepository.findAllByOrderByCreatedAtDesc();
+    public List<Board> findAll() {
+        return boardRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<Board> getByCategorySorted(String category) {
-        return boardRepository.findByCategoryOrderByCreatedAtDesc(category);
-    }
-
-    @Transactional(readOnly = true)
-    public Board getById(Long id) {
+    public Board findById(Long id) {
         return boardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Board not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + id));
     }
 
-    public Board createPost(String category,
-                            String title,
-                            String content,
-                            String location,
-                            LocalDateTime meetingStartTime,
-                            LocalDateTime meetingEndTime,
-                            Integer limitCount,
-                            Authentication auth) {
-        // 로그인 사용자(CustomUser) 활용
-        CustomUser principal = (CustomUser) auth.getPrincipal();
-        Long authorId = principal.getId();
-        String authorName = principal.getUsername();
-        // Users 엔티티 레퍼런스 취득(추가 select 방지)
-        Users authorRef = userRepository.getReferenceById(authorId);
-
-        Board board = new Board();
-        board.setCategory(category);
-        board.setTitle(title);
-        board.setContent(content);
-        board.setLocation(location);
-        board.setMeetingStartTime(meetingStartTime);
-        board.setMeetingEndTime(meetingEndTime);
-        board.setLimitCount(limitCount);
-        board.setUser(authorRef);
-        board.setAuthorName(authorName);
-        Board savedBoard = boardRepository.save(board);
-
-        //게시글 작성 시 자동으로 그룹 생성
-        groupService.createGroupFromBoard(savedBoard);
-
-        return savedBoard;
-    }
-
-    public Board updatePost(Long id,
-                            String title,
-                            String content,
-                            String location,
-                            LocalDateTime meetingStartTime,
-                            LocalDateTime meetingEndTime,
-                            Integer limitCount) {
-        Board board = getById(id);
-        board.setTitle(title);
-        board.setContent(content);
-        board.setLocation(location);
-        board.setMeetingStartTime(meetingStartTime);
-        board.setMeetingEndTime(meetingEndTime);
-        board.setLimitCount(limitCount);
+    public Board save(Board board) {
         return boardRepository.save(board);
     }
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public List<Board> searchBoards(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return boardRepository.findAll();
+        }
+        return boardRepository.findByTitleContainingOrContentContaining(keyword, keyword);
     }
 }
