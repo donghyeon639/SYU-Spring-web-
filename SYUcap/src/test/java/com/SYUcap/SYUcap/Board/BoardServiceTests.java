@@ -2,47 +2,78 @@ package com.SYUcap.SYUcap.Board;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class BoardServiceTests {
 
-    @Test
-    @DisplayName("[TC-011] 제목 길이 20자 초과 입력 시 실패")
-    void titleTooLong_Fail() {
-        String title = "지금 당장 도서관에서 모일 사람은 이곳으로 모이세요"; // 20자 초과
-        assertTrue(title.length() > 20);
+    BoardRepository boardRepository = Mockito.mock(BoardRepository.class);
+    BoardService boardService = new BoardService(boardRepository);
+
+    private Board createValidBoard() {
+        Board board = new Board();
+        board.setTitle("정상제목");
+        board.setContent("정상내용");
+        board.setLimitCount(5);
+        board.setMeetingStartTime(LocalDateTime.of(2025,11,23,13,0));
+        board.setMeetingEndTime(LocalDateTime.of(2025,11,23,14,0));
+        return board;
     }
 
     @Test
-    @DisplayName("[TC-012] 내용 길이 200자 초과 입력 시 실패")
-    void contentTooLong_Fail() {
-        String content = "a".repeat(201); // 201자
-        assertTrue(content.length() > 200);
+    @DisplayName("[TC-011] 제목 20자 초과 시 저장 실패")
+    void save_TitleTooLong_Fail() {
+        Board board = createValidBoard();
+        board.setTitle("이 제목은 무려 20자를 훨씬 넘어서 실패해야 합니다.");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> boardService.save(board));
     }
 
     @Test
-    @DisplayName("[TC-013] 시작 시간이 종료 시간보다 이후일 경우 실패")
-    void invalidMeetingTime_Fail() {
-        LocalDateTime start = LocalDateTime.of(2025, 11, 23, 13, 0);
-        LocalDateTime end = LocalDateTime.of(2025, 11, 23, 12, 0);
-        assertTrue(start.isAfter(end));
+    @DisplayName("[TC-012] 내용 200자 초과 시 저장 실패")
+    void save_ContentTooLong_Fail() {
+        Board board = createValidBoard();
+        board.setContent("a".repeat(201));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> boardService.save(board));
     }
 
     @Test
-    @DisplayName("[TC-014] 제한 인원 음수 입력 시 실패")
-    void limitCountNegative_Fail() {
-        int limitCount = -5;
-        assertTrue(limitCount < 1);
+    @DisplayName("[TC-013] 시작 > 종료면 저장 실패")
+    void save_InvalidMeetingTime_Fail() {
+        Board board = createValidBoard();
+        board.setMeetingStartTime(LocalDateTime.of(2025,11,23,14,0));
+        board.setMeetingEndTime(LocalDateTime.of(2025,11,23,13,0));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> boardService.save(board));
     }
 
     @Test
-    @DisplayName("[TC-015] 제한 인원 0 입력 시 실패")
-    void limitCountZero_Fail() {
-        int limitCount = 0;
-        assertTrue(limitCount < 1);
+    @DisplayName("[TC-014] 제한 인원 음수면 저장 실패")
+    void save_LimitNegative_Fail() {
+        Board board = createValidBoard();
+        board.setLimitCount(-1);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> boardService.save(board));
+    }
+
+    @Test
+    @DisplayName("[TC-015] 정상 데이터는 저장 성공")
+    void save_Success() {
+        Board board = createValidBoard();
+        when(boardRepository.save(any(Board.class))).thenReturn(board);
+
+        Board saved = boardService.save(board);
+
+        assertEquals("정상제목", saved.getTitle());
+        verify(boardRepository, times(1)).save(board);
     }
 }
-

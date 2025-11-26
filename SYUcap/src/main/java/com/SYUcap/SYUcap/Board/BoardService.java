@@ -23,6 +23,34 @@ public class BoardService {
     }
 
     public Board save(Board board) {
+        // 제목
+        if (board.getTitle() == null || board.getTitle().isBlank()) {
+            throw new IllegalArgumentException("제목은 필수입니다.");
+        }
+        if (board.getTitle().length() > 20) {
+            throw new IllegalArgumentException("제목은 20자를 넘을 수 없습니다.");
+        }
+
+        // 내용
+        if (board.getContent() == null || board.getContent().isBlank()) {
+            throw new IllegalArgumentException("내용은 필수입니다.");
+        }
+        if (board.getContent().length() > 200) {
+            throw new IllegalArgumentException("내용은 200자를 넘을 수 없습니다.");
+        }
+
+        // 제한 인원
+        if (board.getLimitCount() == null || board.getLimitCount() < 1) {
+            throw new IllegalArgumentException("제한 인원은 1 이상이어야 합니다.");
+        }
+
+        // 모임 시간
+        if (board.getMeetingStartTime() == null || board.getMeetingEndTime() == null) {
+            throw new IllegalArgumentException("모임 시간은 필수입니다.");
+        }
+        if (board.getMeetingStartTime().isAfter(board.getMeetingEndTime())) {
+            throw new IllegalArgumentException("시작 시간이 종료 시간보다 늦을 수 없습니다.");
+        }
         return boardRepository.save(board);
     }
 
