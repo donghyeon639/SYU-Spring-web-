@@ -37,4 +37,21 @@ public class UserService {
         // 숫자/영문이 아닌 문자(특수문자) 포함 여부
         return password.matches(".*[^a-zA-Z0-9].*");
     }
+    public void updateProfile(String userId, String newUserName, String newPassword) {
+
+        Users user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        user.setUserName(newUserName);
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            if (!isValidPassword(newPassword)) {
+                throw new IllegalArgumentException("비밀번호는 6~16자이며 특수문자를 최소 1개 포함해야 합니다.");
+            }
+            String hash = passwordEncoder.encode(newPassword);
+            user.setPassword(hash);
+        }
+
+        userRepository.save(user);
+    }
 }

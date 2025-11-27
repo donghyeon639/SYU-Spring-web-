@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>모두의 공강 - 프로필</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+    <style>
+        .profile-container {
+            width: 350px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.08);
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        .submit-btn {
+            width: 100%; padding: 12px; border: none;
+            background: #4f46e5; color: white; font-size: 16px;
+            border-radius: 8px; cursor: pointer;
+        }
+        .submit-btn:hover { background: #4338ca; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="center">⏱️</div>
+    <h1>모두의 공강</h1>
+</header>
+
+<h2 class="title" style="text-align:center;margin-bottom:32px;">프로필</h2>
+
+<div class="profile-container">
+    <!-- DB 저장을 위해 반드시 POST + /profile 로 보냄 -->
+    <form method="post" th:action="@{/profile}">
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" placeholder="이름 입력">
+        </div>
+
+        <div class="form-group">
+            <label for="password">새 비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호 변경 (선택)">
+        </div>
+
+        <button class="submit-btn" type="submit">프로필 저장</button>
+    </form>
+</div>
+
+</body>
+</html>

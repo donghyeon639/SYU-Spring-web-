@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -36,4 +38,14 @@ public class UserController {
         userService.addUser(userId, password, passwordConfirm, userName);
         return "login.html";
     }
+
+    @PostMapping("/profile")
+    public String updateProfile(@RequestParam String name,
+                                @RequestParam(required = false) String password) {
+        String loginUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.updateProfile(loginUserId, name, password);
+        return "redirect:/mypage";
+
+    }
+
 }
