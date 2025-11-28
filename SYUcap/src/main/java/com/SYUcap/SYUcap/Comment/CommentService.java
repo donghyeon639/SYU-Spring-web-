@@ -26,7 +26,7 @@ public class CommentService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음 id=" + boardId));
 
-        // [추가] 로그인한 사용자 정보 조회
+        // 로그인한 사용자 정보 조회
         Users user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음 id=" + userId));
 
@@ -34,16 +34,14 @@ public class CommentService {
         comment.setContent(content);
         comment.setBoard(board);
 
-        // [수정] 작성자 정보 연결
+        // 작성자 정보 연결
         comment.setUser(user);
         comment.setAuthorName(user.getUserName()); // 화면 표시용 이름 저장
 
         commentRepository.save(comment);
     }
 
-    /**
-     * 댓글 수정 (본인 확인 추가)
-     */
+
     @Transactional
     public void updateComment(Long commentId, String newContent, String currentUserId) {
         Comment comment = commentRepository.findById(commentId)
@@ -55,9 +53,7 @@ public class CommentService {
         comment.setContent(newContent);
     }
 
-    /**
-     * 댓글 삭제 (본인 확인 추가)
-     */
+
     @Transactional
     public void deleteComment(Long commentId, String currentUserId) {
         Comment comment = commentRepository.findById(commentId)

@@ -19,7 +19,6 @@ public class Comment {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // 편의상 남겨둠 (화면에 이름 보여줄 때 사용)
     private String authorName;
 
     private LocalDateTime createdAt;
@@ -28,7 +27,7 @@ public class Comment {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    // [추가] 댓글 작성자 (Users 엔티티와 연결)
+    // 댓글 작성자 (Users 엔티티와 연결)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // DB에 user_id 컬럼으로 저장됨
     private Users user;
