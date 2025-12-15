@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 @AutoConfigureMockMvc // 보안 필터 활성화 (로그인 플로우 검증)
 @ActiveProfiles("test")
 @Transactional
-public class UserControllerTest {
+public class UserIntergrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(UserControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(UserIntergrationTest.class);
 
     @Autowired MockMvc mockMvc;
     @Autowired UserRepository userRepository;

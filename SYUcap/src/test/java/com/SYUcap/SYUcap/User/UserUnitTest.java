@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserUnitTest {
 
     @Mock
     UserRepository userRepository;
@@ -53,7 +52,7 @@ class UserServiceTest {
         verify(passwordEncoder, never()).encode(any());
     }
 
-    /*
+
     @Test
     @DisplayName("addUser 실패: 아이디에 제어문자 포함")
     void addUser_invalidUserIdControl_fail() {
@@ -68,9 +67,8 @@ class UserServiceTest {
         verify(userRepository, never()).findByUserId(anyString());
     }
 
-    */
 
-    /*
+
     @Test
     @DisplayName("addUser 실패: 비밀번호 제어문자 포함")
     void addUser_passwordControl_fail() {
@@ -86,7 +84,7 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, act);
         verify(passwordEncoder, never()).encode(any());
     }
-     */
+
 
     @Test
     @DisplayName("addUser 실패: 비밀번호 길이 초과")

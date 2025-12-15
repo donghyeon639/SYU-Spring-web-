@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BoardServiceTests {
+class BoardUnitTests {
 
     @Test
     @DisplayName("[TC-011] 제목 길이 20자 초과 입력 시 실패")

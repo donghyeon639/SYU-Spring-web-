@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(BoardController.class)
-class BoardControllerTests {
+class BoardIntergrationTests {
 
     @Autowired
     private MockMvc mockMvc;
