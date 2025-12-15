@@ -1,6 +1,7 @@
 package com.SYUcap.SYUcap.Comment;
 
 import com.SYUcap.SYUcap.Board.Board;
+import com.SYUcap.SYUcap.User.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,10 @@ public class Comment {
     // '하나의' 게시글(Board)에 '많은' 댓글(Comment)이 달릴 수 있음
     @ManyToOne
     private Board board; // 이 댓글이 속한 게시글
+
+    // 작성자(로그인 유저) 연관관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users user;
 
     @PrePersist
     protected void onCreate() {

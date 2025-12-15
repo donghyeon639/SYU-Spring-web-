@@ -1,5 +1,7 @@
 package com.SYUcap.SYUcap.Board;
 
+import com.SYUcap.SYUcap.User.UserRepository;
+import com.SYUcap.SYUcap.User.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserRepository userRepository;
 
     // 허용 카테고리 (검증 & 라벨 표기)
     private static final List<String> ALLOWED = List.of("게임", "스터디", "영화", "운동", "밥약");
@@ -25,10 +28,7 @@ public class BoardController {
     /** 전체 목록 */
     @GetMapping
     public String listAll(Model model) {
-        List<Board> boards = boardService.findAll().stream()
-                .sorted(Comparator.comparing(Board::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-                .toList();
-
+        List<Board> boards = boardService.getAllSorted();
         model.addAttribute("active", "home");
         model.addAttribute("category", "전체");
         model.addAttribute("posts", boards);
@@ -39,12 +39,7 @@ public class BoardController {
     @GetMapping("/{cat}")
     public String listByCategory(@PathVariable("cat") String cat, Model model) {
         validateCategory(cat);
-
-        List<Board> boards = boardService.findAll().stream()
-                .filter(p -> cat.equals(p.getCategory()))
-                .sorted(Comparator.comparing(Board::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-                .toList();
-
+        List<Board> boards = boardService.getByCategorySorted(cat);
         model.addAttribute("active", "home");
         model.addAttribute("category", cat);
         model.addAttribute("posts", boards);
@@ -98,8 +93,21 @@ public class BoardController {
         board.setMeetingStartTime(meetingStartTime);
         board.setMeetingEndTime(meetingEndTime);
         board.setLimitCount(limitCount);
+        // 작성자 Users 연관 설정: authorName으로 조회, 없으면 생성
+        if (authorName != null && !authorName.isBlank() && !"익명".equals(authorName)) {
+            Users user = userRepository.findAll().stream()
+                    .filter(u -> authorName.equals(u.getUserName()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        Users u = new Users();
+                        u.setUserName(authorName);
+                        u.setUserId("auto_" + java.util.UUID.randomUUID());
+                        u.setPassword("nopass");
+                        return userRepository.save(u);
+                    });
+            board.setUser(user);
+        }
         board.setAuthorName(authorName);
-        // createdAt은 @PrePersist에서 자동 세팅
 
         boardService.save(board);
         String encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8);
@@ -130,6 +138,59 @@ public class BoardController {
         return "redirect:/board/" + encodedCat;
     }
 
+    /** 글 수정 폼 */
+    @GetMapping("/{cat}/{id}/edit")
+    public String editForm(@PathVariable String cat, @PathVariable Long id, Model model) {
+        validateCategory(cat);
+        Board board = boardService.findById(id);
+        model.addAttribute("active", "home");
+        model.addAttribute("category", cat);
+        model.addAttribute("post", board);
+        return "board-form";
+    }
+
+    /** 글 수정 저장 */
+    @PostMapping("/{cat}/{id}/edit")
+    public String editSubmit(
+            @PathVariable String cat,
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime meetingStartTime,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime meetingEndTime,
+            @RequestParam(required = false) Integer limitCount,
+            @RequestParam(defaultValue = "익명") String authorName,
+            Model model
+    ) {
+        validateCategory(cat);
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("category", cat);
+            model.addAttribute("post", boardService.findById(id));
+            model.addAttribute("errorMessage", "제목을 입력하세요");
+            return "board-form";
+        }
+        if (content == null || content.trim().isEmpty()) {
+            model.addAttribute("category", cat);
+            model.addAttribute("post", boardService.findById(id));
+            model.addAttribute("errorMessage", "내용을 입력하세요");
+            return "board-form";
+        }
+        Board board = boardService.findById(id);
+        board.setTitle(title);
+        board.setContent(content);
+        board.setLocation(location);
+        board.setMeetingStartTime(meetingStartTime);
+        board.setMeetingEndTime(meetingEndTime);
+        // limitCount가 null이면 기존 값 유지, 기존 값도 없으면 기본 1 설정
+        Integer finalLimit = (limitCount != null) ? limitCount : (board.getLimitCount() != null ? board.getLimitCount() : 1);
+        board.setLimitCount(finalLimit);
+        board.setAuthorName(authorName);
+        boardService.save(board);
+        String encodedCat = java.net.URLEncoder.encode(cat, java.nio.charset.StandardCharsets.UTF_8);
+        return "redirect:/board/" + encodedCat + "/" + id;
+    }
+
     private void validateCategory(String cat) {
         if (!ALLOWED.contains(cat)) {
             throw new IllegalArgumentException("Unknown category: " + cat);
@@ -148,3 +209,4 @@ public class BoardController {
         return "board-list";
     }
 }
+

@@ -50,12 +50,15 @@ class GroupPerformanceTest {
 
     @BeforeEach
     void setUp() {
-        // 테스트용 사용자 생성
-        testUser = new Users();
-        testUser.setUserId("testuser");
-        testUser.setPassword("password123!");
-        testUser.setUserName("테스트유저");
-        testUser = userRepository.save(testUser);
+        // 테스트용 사용자: 이미 있으면 재사용, 없으면 생성
+        this.testUser = userRepository.findByUserId("testuser")
+                .orElseGet(() -> {
+                    Users u = new Users();
+                    u.setUserId("testuser");
+                    u.setPassword("password123!");
+                    u.setUserName("테스트유저");
+                    return userRepository.save(u);
+                });
     }
 
     @Test
@@ -197,7 +200,7 @@ class GroupPerformanceTest {
     }
 
     @Test
-    @DisplayName("TC-PERF-006: 100만 건 가입 신청 데이터 생성")
+    @DisplayName("TC-PERF-006: 1만 건 가입 신청 데이터 생성")
     @Transactional
     void testBulkInsertJoinRequests() {
         // Given: 그룹 생성
@@ -342,7 +345,7 @@ class GroupPerformanceTest {
     }
 
     @Test
-    @DisplayName("TC-PERF-008: 1억 건 가입 신청 중 특정 사용자 조회")
+    @DisplayName("TC-PERF-008: 1000건 가입 신청 중 특정 사용자 조회")
     @Transactional
     void testQueryPerformanceOnLargeDataset() {
         // Given: 대량 데이터 생성 (실제로는 1000건으로 축소)
@@ -402,7 +405,7 @@ class GroupPerformanceTest {
     }
 
     @Test
-    @DisplayName("TC-RES-001: 100,000개 그룹 전체 조회 (페이징 없이)")
+    @DisplayName("TC-RES-001: 1000개 그룹 전체 조회 (페이징 없이)")
     @Transactional
     void testOutOfMemoryScenario() {
         // Given: 대량 그룹 생성 (실제로는 1000개로 축소)
@@ -450,3 +453,4 @@ class GroupPerformanceTest {
         System.out.println("실제 100,000개 그룹에서는 페이징 필수");
     }
 }
+

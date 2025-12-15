@@ -34,7 +34,7 @@
       </thead>
       <tbody>
       <tr th:if="${#lists.isEmpty(posts)}">
-        <td colspan="7" class="empty-cell">아직 글이 없어요. 첫 글을 작성해보세요!</td>
+        <td colspan="7" class="empty-cell">게시글이 없습니다.</td>
       </tr>
 
       <tr th:each="p : ${posts}">
@@ -50,7 +50,8 @@
           <span th:text="${p.meetingEndTime != null ? ' ~ ' + #temporals.format(p.meetingEndTime, 'MM/dd HH:mm') : ''}"></span>
         </td>
         <td th:text="${p.limitCount != null ? p.limitCount : '-'}">-</td>
-        <td th:text="${p.authorName} ?: '익명'">익명</td>
+        <!-- 작성자: user.userName을 우선 사용, 없으면 authorName 사용 -->
+        <td th:text="${p.user != null && p.user.userName != null ? p.user.userName : (p.authorName != null ? p.authorName : '익명')}">익명</td>
         <!-- createdAt null-safe 처리 -->
         <td th:text="${p.createdAt != null ? #temporals.format(p.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">2025-01-01</td>
       </tr>

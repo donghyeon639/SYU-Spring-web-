@@ -51,7 +51,19 @@ class UserUnitTest {
         verify(userRepository, never()).save(any());
         verify(passwordEncoder, never()).encode(any());
     }
+    @Test
+    @DisplayName("addUser 실패: 아이디 공백 포함")
+    void addUser_userIdContainsSpace_fail() {
+        // given
+        String userId = "bad id";
 
+        // when
+        Executable act = () -> userService.addUser(userId, "GoodPwd!1", "이름", "GoodPwd!1");
+
+        // then
+        assertThrows(IllegalArgumentException.class, act);
+        verify(userRepository, never()).findByUserId(any());
+    }
 
     @Test
     @DisplayName("addUser 실패: 아이디에 제어문자 포함")
@@ -74,7 +86,6 @@ class UserUnitTest {
     void addUser_passwordControl_fail() {
         // given
         String userId = "cleanId";
-        when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
         String badPwd = "Good\tPwd!1";
 
         // when
@@ -82,6 +93,8 @@ class UserUnitTest {
 
         // then
         assertThrows(IllegalArgumentException.class, act);
+        // 제어문자 때문에 조기 종료되므로, DB 조회/인코딩이 전혀 일어나지 않아야 한다.
+        verify(userRepository, never()).findByUserId(anyString());
         verify(passwordEncoder, never()).encode(any());
     }
 
@@ -133,19 +146,7 @@ class UserUnitTest {
         assertThrows(IllegalArgumentException.class, act);
         verify(passwordEncoder, never()).encode(any());
     }
-    /*
-    @Test
-    @DisplayName("addUser 실패: 아이디 공백 포함")
-    void addUser_userIdContainsSpace_fail() {
-        // given
-        String userId = "bad id";
 
-        // when
-        Executable act = () -> userService.addUser(userId, "GoodPwd!1", "이름", "GoodPwd!1");
 
-        // then
-        assertThrows(IllegalArgumentException.class, act);
-        verify(userRepository, never()).findByUserId(any());
-    }
-    */
+
 }

@@ -15,10 +15,12 @@
 <main class="container">
     <section class="card">
         <h2 th:text="${post.title}">제목</h2>
-        <p class="muted">
-            작성자: <span th:text="${post.authorName}">익명</span> ·
-            작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
-        </p>
+        <div class="meta">
+            <span>작성자: </span>
+            <strong th:text="${post.user != null && post.user.userName != null ? post.user.userName : (post.authorName != null ? post.authorName : '익명')}">익명</strong>
+            ·
+            <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01</span>
+        </div>
         <p><b>장소:</b> <span th:text="${post.location} ?: '-'">-</span></p>
         <p>
             <b>일정:</b>
