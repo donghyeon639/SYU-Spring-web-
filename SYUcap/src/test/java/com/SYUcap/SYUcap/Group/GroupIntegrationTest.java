@@ -60,9 +60,18 @@ class GroupIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // 테스트용 사용자 생성
+        // 이전 테스트 데이터 정리 (유저/게시글/그룹 관련 엔티티 순으로 삭제)
+        // 그룹 연관 관계를 고려해 순서 주의: 그룹 멤버/가입요청 -> 그룹 -> 게시글 -> 유저
+        joinRequestsRepository.deleteAll();
+        groupMembersRepository.deleteAll();
+        groupsRepository.deleteAll();
+        boardRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // 테스트용 사용자 생성 - userId를 매 테스트마다 유일하게 설정
+        long userCount = userRepository.count();
         testUser = new Users();
-        testUser.setUserId("testuser");
+        testUser.setUserId("testuser_" + userCount);
         testUser.setPassword("password123!");
         testUser.setUserName("테스트유저");
         testUser = userRepository.save(testUser);

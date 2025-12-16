@@ -214,7 +214,7 @@ class GroupPerformanceTest {
         Groups group = groupService.createGroupFromBoard(board);
 
         // When: 100만 건 생성 (시간이 오래 걸리므로 1만 건으로 축소)
-        int targetCount = 10000; // 실제로는 1,000,000이지만 테스트 시간 단축
+        int targetCount = 10000;
 
         long startTime = System.currentTimeMillis();
 
@@ -348,7 +348,7 @@ class GroupPerformanceTest {
     @DisplayName("TC-PERF-008: 1000건 가입 신청 중 특정 사용자 조회")
     @Transactional
     void testQueryPerformanceOnLargeDataset() {
-        // Given: 대량 데이터 생성 (실제로는 1000건으로 축소)
+        // Given: 대량 데이터 생성
         Board board = new Board();
         board.setTitle("조회 성능 테스트");
         board.setContent("대용량 조회");

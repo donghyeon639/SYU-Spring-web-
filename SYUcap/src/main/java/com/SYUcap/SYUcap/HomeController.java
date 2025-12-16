@@ -35,9 +35,4 @@ public class HomeController {
         model.addAttribute("active", "notifications");
         return "notifications";
     }
-
-    @GetMapping("/mypage")
-    public String mypage(Model model) {
-        return "mypage";
-    }
 }

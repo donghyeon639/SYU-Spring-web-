@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ public class UserIntergrationTest {
         String name = "Tester";
         // when
         var result = mockMvc.perform(post("/signup")
+                        .with(csrf())
                         .param("userId", userId)
                         .param("password", rawPw)
                         .param("passwordConfirm", confirm)
@@ -70,6 +72,7 @@ public class UserIntergrationTest {
         String name = "동현";
         // when
         mockMvc.perform(post("/signup")
+                .with(csrf())
                 .param("userId", userId)
                 .param("password", rawPw)
                 .param("passwordConfirm", confirm)
@@ -90,6 +93,7 @@ public class UserIntergrationTest {
         String confirm = rawPw;
         String name = "로그인";
         mockMvc.perform(post("/signup")
+                .with(csrf())
                 .param("userId", userId)
                 .param("password", rawPw)
                 .param("passwordConfirm", confirm)
@@ -97,6 +101,7 @@ public class UserIntergrationTest {
                 .andExpect(status().isOk());
         // when
         mockMvc.perform(post("/login")
+                .with(csrf())
                 .param("userId", userId)
                 .param("password", rawPw))
         //then
@@ -112,6 +117,7 @@ public class UserIntergrationTest {
         String confirm = rawPw;
         String name = "더블";
         mockMvc.perform(post("/signup")
+                .with(csrf())
                 .param("userId", userId)
                 .param("password", rawPw)
                 .param("passwordConfirm", confirm)
@@ -120,6 +126,7 @@ public class UserIntergrationTest {
 
         // when: 동일 데이터로 즉시 두 번째 제출 (연속 클릭 시나리오)
         mockMvc.perform(post("/signup")
+                .with(csrf())
                 .param("userId", userId)
                 .param("password", rawPw)
                 .param("passwordConfirm", confirm)
@@ -154,6 +161,7 @@ public class UserIntergrationTest {
             try {
                 start.await();
                 var res = mockMvc.perform(post("/signup")
+                                .with(csrf())
                                 .param("userId", userId)
                                 .param("password", rawPw)
                                 .param("passwordConfirm", rawPw)
@@ -181,6 +189,4 @@ public class UserIntergrationTest {
         assertThat(count).isEqualTo(1);
     }
 
-
 }
-

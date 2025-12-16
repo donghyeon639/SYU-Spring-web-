@@ -10,25 +10,28 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "comments")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 댓글 ID
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
-    private String content; // 댓글 내용
+    private String content;
 
-    private String authorName; // 댓글 작성자 이름 (Users 엔티티와 직접 연결 X)
+    private String authorName;
 
-    private LocalDateTime createdAt; // 댓글 작성 시간
+    private LocalDateTime createdAt;
 
-    // '하나의' 게시글(Board)에 '많은' 댓글(Comment)이 달릴 수 있음
-    @ManyToOne
-    private Board board; // 이 댓글이 속한 게시글
 
-    // 작성자(로그인 유저) 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")     // 외래키 컬럼명 'board_id'로 고정
+    private Board board;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")      // 외래키 컬럼명 'user_id'로 고정
     private Users user;
 
     @PrePersist
